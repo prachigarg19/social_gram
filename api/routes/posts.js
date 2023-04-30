@@ -63,12 +63,12 @@ router.put("/:id/like", async (req, res) => {
 });
 
 //GET ALL TIMELINE POSTS
-router.get("/timeline", async (req, res) => {
+router.get("/timeline/:id", async (req, res) => {
   //issue with /timeline is that it will be confused with get /id taking timeline as the id. To avoid this change router to /timeline/all
   try {
     let allPosts = [];
     //find current user
-    const user = await User.findById(req.body.userId);
+    const user = await User.findById(req.params.id);
     const userPost = await Post.find({ userId: user._id });
     //to fetch everything inside map, use Promise.all
     const friendsPost = await Promise.all(
@@ -76,8 +76,11 @@ router.get("/timeline", async (req, res) => {
         return Post.find({ userId: followerId });
       })
     );
-    allPosts.push(userPost);
-    allPosts.push(friendsPost);
+    allPosts.push(...userPost);
+    // allPosts.push(...friendsPost);
+    friendsPost.map((friend) => {
+      friend.map((post) => allPosts.push(post));
+    });
     res.status(200).json(allPosts);
   } catch (e) {
     console.log(e);

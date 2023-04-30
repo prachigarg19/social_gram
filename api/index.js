@@ -5,11 +5,13 @@ const morgan = require("morgan");
 const userRoutes = require("./routes/users");
 const authRoutes = require("./routes/auth");
 const postRoutes = require("./routes/posts");
+const cors = require("cors");
 
 dotenv.config();
 const app = express();
 app.use(morgan("common"));
 app.use(express.json());
+app.use(cors());
 
 main().catch((err) => console.log(err));
 async function main() {
