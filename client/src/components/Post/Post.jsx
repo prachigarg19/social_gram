@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { Users } from "../../dummyData";
 import "./post.css";
+import { Link } from "react-router-dom";
 
 export const Post = ({ post }) => {
   const [like, setLike] = useState(post.likes.length);
@@ -43,12 +43,14 @@ export const Post = ({ post }) => {
       <div className="postWrapper">
         <div className="postTop">
           <div className="postTopLeft">
-            <img
-              className="postProfileImg"
-              //find user with id who posted the picture
-              src={PF + user?.profilePic}
-              alt=""
-            />
+            <Link to={`/profile/${user.username}`}>
+              <img
+                className="postProfileImg"
+                //find user with id who posted the picture
+                src={PF + user?.profilePic}
+                alt=""
+              />
+            </Link>
             <span className="postUsername">{user?.username}</span>
             <span className="postDate">{post.date}</span>
           </div>

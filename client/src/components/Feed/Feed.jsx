@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./feed.css";
 import Share from "../Share/Share";
-import { Posts } from "../../dummyData";
 import { Post } from "../Post/Post";
 
 const Feed = () => {
