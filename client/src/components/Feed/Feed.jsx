@@ -3,15 +3,22 @@ import "./feed.css";
 import Share from "../Share/Share";
 import { Post } from "../Post/Post";
 
-const Feed = () => {
+const Feed = ({ username }) => {
   const [posts, setPosts] = useState(null);
   useEffect(() => {
-    fetch("http://localhost:8800/api/posts/timeline/643283848c419483abc8e1df", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
+    fetch(
+      `${
+        username
+          ? `http://localhost:8800/api/posts/profile/${username}`
+          : "http://localhost:8800/api/posts/timeline/643283848c419483abc8e1df"
+      }`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
       .then((response) => response.json())
       .then((data) => {
         setPosts(data);
@@ -19,7 +26,7 @@ const Feed = () => {
       .catch((error) => {
         console.error("Error:", error);
       });
-  }, [posts]);
+  }, [username]);
 
   return (
     <div className="feed">

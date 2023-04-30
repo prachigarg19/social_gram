@@ -97,4 +97,16 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+//GET A USER'S POSTS
+router.get("/profile/:username", async (req, res) => {
+  try {
+    //finding user id with username as parameter
+    const user = await User.findOne({ username: req.params.username });
+    const posts = await Post.find({ userId: user._id });
+    res.status(200).json(posts);
+  } catch (e) {
+    console.log(e);
+  }
+});
+
 module.exports = router;

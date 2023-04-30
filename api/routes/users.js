@@ -45,9 +45,15 @@ router.delete("/:id", async (req, res) => {
 
 //GET A USER
 
-router.get("/:id", async (req, res) => {
+router.get("/", async (req, res) => {
+  //userId=something will execute this
+  const userId = req.query.userId;
+  //username=something will execute this
+  const username = req.query.username;
   try {
-    const user = await User.findById(req.params.id);
+    const user = userId
+      ? await User.findById(userId)
+      : await User.findOne({ username: username });
     //eliminating unneccesary stuff like password. doc contains our object
     const { password, ...other } = user._doc;
     res.status(200).json(other);
@@ -55,6 +61,7 @@ router.get("/:id", async (req, res) => {
     res.status(500).json(e);
   }
 });
+
 //FOLLOW A USER
 router.put("/:id/follow", async (req, res) => {
   if (req.body.id !== req.params.id) {

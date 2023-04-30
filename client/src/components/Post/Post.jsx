@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useLayoutEffect } from "react";
 import { useState } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import "./post.css";
@@ -7,20 +7,13 @@ import { Link } from "react-router-dom";
 export const Post = ({ post }) => {
   const [like, setLike] = useState(post.likes.length);
   const [isLiked, setIsLiked] = useState(false);
-  const [user, setUser] = useState({
-    _id: "",
-    username: "",
-    email: "",
-    profilePic: "",
-    coverPic: "",
-    followers: [],
-    following: [],
-    isAdmin: false,
-  });
+  const [user, setUser] = useState({});
+  const [isReady, setIsReady] = useState(false);
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
 
-  useEffect(() => {
-    fetch(`http://localhost:8800/api/users/${post.userId}`, {
+  useLayoutEffect(() => {
+    setIsReady(false);
+    fetch(`http://localhost:8800/api/users?userId=${post.userId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -29,16 +22,19 @@ export const Post = ({ post }) => {
       .then((response) => response.json())
       .then((data) => {
         setUser(Object.assign(user, data));
+        setIsReady(true);
+        // console.log(user);
       })
       .catch((error) => {
         console.error("Error:", error);
       });
-  }, []);
+  }, [user]);
   const likeHandler = () => {
     setLike(isLiked ? like - 1 : like + 1);
     setIsLiked(!isLiked);
   };
-  return (
+
+  return isReady ? (
     <div className="post">
       <div className="postWrapper">
         <div className="postTop">
@@ -47,7 +43,7 @@ export const Post = ({ post }) => {
               <img
                 className="postProfileImg"
                 //find user with id who posted the picture
-                src={PF + user?.profilePic}
+                src={PF + user?.profilePic || "/person/noAvatar.png"}
                 alt=""
               />
             </Link>
@@ -84,5 +80,5 @@ export const Post = ({ post }) => {
         </div>
       </div>
     </div>
-  );
+  ) : null;
 };
