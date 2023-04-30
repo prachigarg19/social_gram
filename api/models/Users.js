@@ -55,6 +55,10 @@ const UserSchema = mongoose.Schema({
     type: String,
     max: 50,
   },
+  Relationship: {
+    type: String,
+    max: 50,
+  },
 });
 
 module.exports = mongoose.model("User", UserSchema);

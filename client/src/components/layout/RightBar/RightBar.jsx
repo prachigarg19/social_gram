@@ -31,15 +31,15 @@ const RightBar = ({ profile }) => {
         <div className="rightbarInfo">
           <div className="rightbarInfoItem">
             <span className="rightbarInfoKey">City:</span>
-            <span className="rightbarInfoValue">New York</span>
+            <span className="rightbarInfoValue">{profile.city}</span>
           </div>
           <div className="rightbarInfoItem">
             <span className="rightbarInfoKey">From:</span>
-            <span className="rightbarInfoValue">Madrid</span>
+            <span className="rightbarInfoValue">{profile.from}</span>
           </div>
           <div className="rightbarInfoItem">
-            <span className="rightbarInfoKey">Relationship:</span>
-            <span className="rightbarInfoValue">Single</span>
+            <span className="rightbarInfoKey">Relationship status:</span>
+            <span className="rightbarInfoValue">{profile.relationship}</span>
           </div>
         </div>
         <h4 className="rightbarTitle">User friends</h4>
