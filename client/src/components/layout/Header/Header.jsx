@@ -3,12 +3,15 @@ import SearchIcon from "@mui/icons-material/Search";
 import PersonIcon from "@mui/icons-material/Person";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
+import { Link } from "react-router-dom";
 
 export default function Header() {
   return (
     <div className="topbarContainer">
       <div className="topbarLeft">
-        <span className="logo">Lamasocial</span>
+        <Link to="/">
+          <span className="logo">SocialGram</span>
+        </Link>
       </div>
       <div className="topbarCenter">
         <div className="searchbar">

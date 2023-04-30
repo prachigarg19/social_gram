@@ -5,6 +5,7 @@ import Header from "../../components/layout/Header/Header";
 import LeftBar from "../../components/layout/LeftBar/LeftBar";
 import RightBar from "../../components/layout/RightBar/RightBar";
 const Profile = () => {
+  const PF = process.env.REACT_APP_PUBLIC_FOLDER;
   return (
     <>
       <Header />
@@ -15,12 +16,12 @@ const Profile = () => {
             <div className="profileCover">
               <img
                 className="profileCoverImg"
-                src="assets/post/3.jpeg"
+                src={`${PF}/post/3.jpeg`}
                 alt=""
               />
               <img
                 className="profileUserImg"
-                src="assets/person/7.jpeg"
+                src={`${PF}/person/7.jpeg`}
                 alt=""
               />
             </div>
