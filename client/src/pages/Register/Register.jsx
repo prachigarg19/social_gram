@@ -14,13 +14,17 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const username = usernameRef.current.value;
+    const password = passwordRef.current.value;
+    const email = emailRef.current.value;
     if (passwordRef.current.value !== repeatPasswordRef.current.value) {
       return;
     }
+    if (!username || !email || !password) return;
     const data = {
-      username: usernameRef.current.value,
-      password: passwordRef.current.value,
-      email: emailRef.current.value,
+      username: username,
+      password: password,
+      email: email,
     };
 
     fetch("http://localhost:8800/api/auth/register", {
