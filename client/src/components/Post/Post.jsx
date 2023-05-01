@@ -1,17 +1,19 @@
-import React, { useLayoutEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { useState } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import "./post.css";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../../contexts/AuthContext";
 
 export const Post = ({ post }) => {
+  const { user } = useContext(AuthContext);
   const [like, setLike] = useState(post.likes.length);
-  const [isLiked, setIsLiked] = useState(false);
-  const [user, setUser] = useState({});
+  const [isLiked, setIsLiked] = useState(post.likes.includes(user._id));
+  const [currentPostUser, setCurrentPostUser] = useState({});
   const [isReady, setIsReady] = useState(false);
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     setIsReady(false);
     fetch(`http://localhost:8800/api/users?userId=${post.userId}`, {
       method: "GET",
@@ -21,17 +23,37 @@ export const Post = ({ post }) => {
     })
       .then((response) => response.json())
       .then((data) => {
-        setUser(Object.assign(user, data));
+        setCurrentPostUser(Object.assign(currentPostUser, data));
         setIsReady(true);
-        // console.log(user);
       })
       .catch((error) => {
         console.error("Error:", error);
       });
-  }, [user]);
+  }, [post.userId, currentPostUser]);
+
   const likeHandler = () => {
-    setLike(isLiked ? like - 1 : like + 1);
-    setIsLiked(!isLiked);
+    const data = {
+      userId: user._id,
+    };
+    fetch(`http://localhost:8800/api/posts/${post._id}/like`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (isLiked) {
+          setLike(like - 1);
+        } else {
+          setLike(like + 1);
+        }
+        setIsLiked(!isLiked);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   };
 
   return isReady ? (
@@ -39,15 +61,15 @@ export const Post = ({ post }) => {
       <div className="postWrapper">
         <div className="postTop">
           <div className="postTopLeft">
-            <Link to={`/profile/${user.username}`}>
+            <Link to={`/profile/${currentPostUser.username}`}>
               <img
                 className="postProfileImg"
-                //find user with id who posted the picture
-                src={PF + user?.profilePic || "/person/noAvatar.png"}
+                //find currentPostUser with id who posted the picture
+                src={PF + currentPostUser?.profilePic || "/person/noAvatar.png"}
                 alt=""
               />
             </Link>
-            <span className="postUsername">{user?.username}</span>
+            <span className="postUsername">{currentPostUser?.username}</span>
             <span className="postDate">{post.date}</span>
           </div>
           <div className="postTopRight">
@@ -72,7 +94,11 @@ export const Post = ({ post }) => {
               onClick={likeHandler}
               alt=""
             />
-            <span className="postLikeCounter">{like} people liked it</span>
+            <span className="postLikeCounter">
+              {isLiked
+                ? `You and ${like - 1} people liked this post`
+                : `${like} people liked this post`}{" "}
+            </span>
           </div>
           {/* <div className="postBottomRight">
             <span className="postCommentText">{post.comment} comments</span>
