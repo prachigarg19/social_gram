@@ -24,12 +24,12 @@ router.post("/register", async (req, res) => {
 });
 
 //LOGIN
-router.get("/login", async (req, res) => {
+router.post("/login", async (req, res) => {
   //ask user for email and password
   try {
-    const user = await User.findOne({ username: req.body.username });
+    const user = await User.findOne({ email: req.body.email });
     if (!user) {
-      res.status(404).send("Incorrect username");
+      res.status(404).send("Incorrect email");
       return;
     }
     const validPassword = await bcrypt.compare(
