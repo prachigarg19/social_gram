@@ -3,12 +3,13 @@ import "./login.css";
 import { AuthContext } from "../../contexts/AuthContext";
 import { LoginCall } from "../../apiCalls";
 import { CircularProgress } from "@mui/material";
+import { Link } from "react-router-dom";
 
 const Login = () => {
   //use ref to access dom element input
   const emailRef = useRef();
   const passwordRef = useRef();
-  const { dispatch, user, isFetching } = useContext(AuthContext);
+  const { dispatch, isFetching } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -58,9 +59,14 @@ const Login = () => {
               )}
             </button>
             <span className="loginForgot">Forgot Password?</span>
-            <button className="loginRegisterButton">
-              Create a New Account
-            </button>
+            <Link
+              to="/register"
+              style={{ display: "flex", justifyContent: "center" }}
+            >
+              <button className="loginRegisterButton">
+                Create a New Account
+              </button>
+            </Link>
           </div>
         </form>
       </div>
