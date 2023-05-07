@@ -21,6 +21,12 @@ const Feed = ({ username }) => {
     )
       .then((response) => response.json())
       .then((data) => {
+        // setPosts(
+        //   data.sort(
+        //     (post1, post2) =>
+        //       new Date(post2.createdAt) - new Date(post1.createdAt)
+        //   )
+        // );
         setPosts(data);
       })
       .catch((error) => {

@@ -4,6 +4,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import "./post.css";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthContext";
+import { format } from "timeago.js";
 
 export const Post = ({ post }) => {
   const { user } = useContext(AuthContext);
@@ -70,7 +71,7 @@ export const Post = ({ post }) => {
               />
             </Link>
             <span className="postUsername">{currentPostUser?.username}</span>
-            <span className="postDate">{post.date}</span>
+            <span className="postDate">{format(post.createdAt)}</span>
           </div>
           <div className="postTopRight">
             <MoreVertIcon />
