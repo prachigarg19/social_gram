@@ -44,7 +44,7 @@ const Feed = ({ username }) => {
     >
       <div className="feedWrapper">
         <Share />
-        {posts && posts.map((p) => <Post key={p._id} post={p} />)}
+        {/* {posts && posts.map((p) => <Post key={p._id} post={p} />)} */}
       </div>
     </div>
   );
