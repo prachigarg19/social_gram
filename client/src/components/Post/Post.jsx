@@ -9,7 +9,7 @@ import { format } from "timeago.js";
 export const Post = ({ post }) => {
   const { user } = useContext(AuthContext);
   const [like, setLike] = useState(post.likes.length);
-  const [isLiked, setIsLiked] = useState(post.likes.includes(user._id));
+  const [isLiked, setIsLiked] = useState(post.likes.includes(user?._id));
   const [currentPostUser, setCurrentPostUser] = useState({});
   const [isReady, setIsReady] = useState(false);
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;

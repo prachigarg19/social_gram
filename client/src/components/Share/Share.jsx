@@ -47,14 +47,14 @@ const Share = () => {
           <img
             className="shareProfileImg"
             src={
-              user.profilePicture
-                ? PF + user.profilePicture
+              user?.profilePic
+                ? PF + user.profilePic
                 : PF + "person/noAvatar.png"
             }
             alt=""
           />
           <input
-            placeholder={"What's in your mind " + user.username + "?"}
+            placeholder={"What's in your mind " + user?.username + "?"}
             className="shareInput"
             ref={descRef}
           />
@@ -91,7 +91,7 @@ const Share = () => {
               <span className="shareOptionText">Feelings</span>
             </div>
           </div>
-          <div>
+          <div className="shareButtonContainer">
             <button
               className={`shareButton${file ? "" : " disabledShareButton"}`}
               type="submit"

@@ -16,8 +16,7 @@ export default function Header() {
         <Link to="/">
           <span className="logo">SocialGram</span>
         </Link>
-      </div>
-      <div className="topbarCenter">
+
         <div className="searchbar">
           <SearchIcon className="searchIcon" />
           <input
@@ -27,10 +26,10 @@ export default function Header() {
         </div>
       </div>
       <div className="topbarRight">
-        <div className="topbarLinks">
+        {/* <div className="topbarLinks">
           <span className="topbarLink">Homepage</span>
           <span className="topbarLink">Timeline</span>
-        </div>
+        </div> */}
         <div className="topbarIcons">
           <div className="topbarIconItem">
             <PersonIcon />
@@ -44,18 +43,18 @@ export default function Header() {
             <NotificationsIcon />
             <span className="topbarIconBadge">1</span>
           </div>
+          <Link to={user?.username ? `/profile/${user?.username}` : "/"}>
+            <img
+              src={
+                user?.profilePic
+                  ? PF + user.profilePic
+                  : PF + "person/noAvatar.png"
+              }
+              alt=""
+              className="topbarImg topbarIconItem"
+            />
+          </Link>
         </div>
-        <Link to={`/profile/${user.username}`}>
-          <img
-            src={
-              user.profilePic
-                ? PF + user.profilePic
-                : PF + "person/noAvatar.png"
-            }
-            alt=""
-            className="topbarImg"
-          />
-        </Link>
       </div>
     </div>
   );
