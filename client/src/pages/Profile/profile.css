@@ -3,6 +3,10 @@
     flex: 5.5;
 }
 
+.hideProfile {
+    display: none;
+}
+
 .profileRight{
     flex: 9;
 }

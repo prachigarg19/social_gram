@@ -1,15 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import "./profile.css";
 import Feed from "../../components/Feed/Feed";
 import Header from "../../components/layout/Header/Header";
 import LeftBar from "../../components/layout/LeftBar/LeftBar";
 import RightBar from "../../components/layout/RightBar/RightBar";
 import { useParams } from "react-router-dom";
+import { LayoutContext } from "../../contexts/LayoutContext";
 
 const Profile = () => {
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
   const [user, setUser] = useState({});
   const [isReady, setIsReady] = useState(false);
+  const { isMobile, openLeftMenu, openRightMenu } = useContext(LayoutContext);
   const { username } = useParams();
 
   //display user information
@@ -37,7 +39,13 @@ const Profile = () => {
         <div className="profile">
           <LeftBar />
           <div className="profileRight">
-            <div className="profileRightTop">
+            <div
+              className={
+                isMobile && (openLeftMenu || openRightMenu)
+                  ? "hideProfile"
+                  : "profileRightTop"
+              }
+            >
               <div className="profileCover">
                 <img
                   className="profileCoverImg"
