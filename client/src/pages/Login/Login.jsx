@@ -18,8 +18,9 @@ const Login = () => {
       password: passwordRef.current.value,
     };
     try {
-      if (userCredentials.email && userCredentials.password)
+      if (userCredentials.email && userCredentials.password) {
         await LoginCall(userCredentials, dispatch);
+      }
     } catch (e) {
       console.log(e);
     }

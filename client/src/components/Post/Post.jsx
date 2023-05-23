@@ -7,7 +7,7 @@ import { AuthContext } from "../../contexts/AuthContext";
 import { format } from "timeago.js";
 
 export const Post = ({ post }) => {
-  const { user } = useContext(AuthContext);
+  const { user, token } = useContext(AuthContext);
   const [like, setLike] = useState(post.likes.length);
   const [isLiked, setIsLiked] = useState(post.likes.includes(user?._id));
   const [currentPostUser, setCurrentPostUser] = useState({});
@@ -33,15 +33,12 @@ export const Post = ({ post }) => {
   }, [post.userId, currentPostUser]);
 
   const likeHandler = () => {
-    const data = {
-      userId: user._id,
-    };
     fetch(`http://localhost:8800/api/posts/${post._id}/like`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
+        "auth-token": token,
       },
-      body: JSON.stringify(data),
     })
       .then((response) => response.json())
       .then((data) => {

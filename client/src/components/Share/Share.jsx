@@ -7,7 +7,7 @@ import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import { AuthContext } from "../../contexts/AuthContext";
 
 const Share = () => {
-  const { user } = useContext(AuthContext);
+  const { user, token } = useContext(AuthContext);
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
   const descRef = useRef();
   const [file, setFile] = useState(null);
@@ -21,12 +21,13 @@ const Share = () => {
     e.preventDefault();
     console.log(file);
     if (!file) return;
-    const data = { userId: user._id, desc: descRef.current.value || "" };
+    const data = { desc: descRef.current.value || "" };
 
     fetch("http://localhost:8800/api/posts", {
       method: "POST", // or 'PUT'
       headers: {
         "Content-Type": "application/json",
+        "auth-token": token,
       },
       body: JSON.stringify(data),
     })

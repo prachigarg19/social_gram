@@ -9,7 +9,8 @@ export const LoginCall = async (userCredentials, dispatch) => {
       body: JSON.stringify(userCredentials),
     });
     const data = await response.json();
-    dispatch({ type: "LOGIN_SUCCESSFUL", payload: data });
+    localStorage.setItem("token", data.token);
+    dispatch({ type: "LOGIN_SUCCESSFUL", payload: data.user });
   } catch (err) {
     dispatch({ type: "LOGIN_ERROR", payload: err });
   }

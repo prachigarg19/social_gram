@@ -1,11 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/Users");
+const getUser = require("../middleware/getUser");
 
 //UPDATE USER
-router.put("/:id", async (req, res) => {
+router.put("/:id", getUser, async (req, res) => {
   //if user matches
-  if (req.body.id === req.params.id || req.body.isAdmin) {
+  if (req.userId === req.params.id || req.body.isAdmin) {
     //update password
     if (req.body.password) {
       try {
@@ -29,9 +30,9 @@ router.put("/:id", async (req, res) => {
 
 //DELETE A USER
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", getUser, async (req, res) => {
   //if user matches
-  if (req.body.id === req.params.id || req.body.isAdmin) {
+  if (req.userId === req.params.id || req.body.isAdmin) {
     try {
       const user = await User.findByIdAndDelete(req.params.id);
       res.status(200).send("account has been deleted");
@@ -90,21 +91,21 @@ router.get("/friends/:userId", async (req, res) => {
 });
 
 //FOLLOW A USER
-router.put("/:id/follow", async (req, res) => {
-  if (req.body.id !== req.params.id) {
+router.put("/:id/follow", getUser, async (req, res) => {
+  if (req.userId !== req.params.id) {
     try {
       //id of the user to follow
       const user = await User.findById(req.params.id);
       //id of the current user
-      const currentUser = await User.findById(req.body.id);
+      const currentUser = await User.findById(req.userId);
       //check if current user is not aready follwing
-      if (!user.followers.includes(req.body.id)) {
+      if (!user.followers.includes(req.userId)) {
         //update follower array of user
         await User.findByIdAndUpdate(req.params.id, {
-          $push: { followers: req.body.id },
+          $push: { followers: req.userId },
         });
         //update follow array of current user
-        await User.findByIdAndUpdate(req.body.id, {
+        await User.findByIdAndUpdate(req.userId, {
           $push: { following: req.params.id },
         });
         res.status(200).send("The follow request was successful");
@@ -118,21 +119,21 @@ router.put("/:id/follow", async (req, res) => {
 });
 
 //UNFOLLOW A USER
-router.put("/:id/unfollow", async (req, res) => {
-  if (req.body.id !== req.params.id) {
+router.put("/:id/unfollow", getUser, async (req, res) => {
+  if (req.userId !== req.params.id) {
     try {
       //id of the user to follow
       const user = await User.findById(req.params.id);
       //id of the current user
-      const currentUser = await User.findById(req.body.id);
+      const currentUser = await User.findById(req.userId);
       //check if current user is not aready follwing
-      if (user.followers.includes(req.body.id)) {
+      if (user.followers.includes(req.userId)) {
         //update follower array of user
         await User.findByIdAndUpdate(req.params.id, {
-          $pull: { followers: req.body.id },
+          $pull: { followers: req.userId },
         });
         //update follow array of current user
-        await User.findByIdAndUpdate(req.body.id, {
+        await User.findByIdAndUpdate(req.userId, {
           $pull: { following: req.params.id },
         });
         res.status(200).send("The unfollow request was successful");

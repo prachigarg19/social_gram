@@ -2,14 +2,15 @@ const express = require("express");
 const router = express.Router();
 const Post = require("../models/Post");
 const User = require("../models/Users");
+const getUser = require("../middleware/getUser");
 
 //create a post
-router.post("/", async (req, res) => {
+router.post("/", getUser, async (req, res) => {
   try {
     const newPost = await new Post({
       img: req.body.img,
       desc: req.body.desc,
-      userId: req.body.userId,
+      userId: req.userId,
     });
     const savedPost = await newPost.save();
     res.status(200).json(savedPost);
@@ -19,13 +20,13 @@ router.post("/", async (req, res) => {
 });
 
 //update a post
-router.put("/:id", async (req, res) => {
+router.put("/:id", getUser, async (req, res) => {
   //id = object id of post
   try {
     //find post from object id in parameter
     const post = await Post.findById(req.params.id);
     //check if user is the post creator
-    if (post && post.userId === req.body.userId) {
+    if (post && post.userId === req.userId) {
       await post.updateOne({
         $set: req.body,
       });
@@ -39,21 +40,21 @@ router.put("/:id", async (req, res) => {
 });
 
 //LIKE POSTS
-router.put("/:id/like", async (req, res) => {
+router.put("/:id/like", getUser, async (req, res) => {
   //id = object id of post
   //body contains user id of user liking the post
   try {
     //find post from object id in parameter
     const post = await Post.findById(req.params.id);
     //check if user is the post creator
-    if (post && !post.likes.includes(req.body.userId)) {
+    if (post && !post.likes.includes(req.userId)) {
       await post.updateOne({
-        $push: { likes: req.body.userId },
+        $push: { likes: req.userId },
       });
       res.status(200).json("The post has been Liked");
     } else {
       await post.updateOne({
-        $pull: { likes: req.body.userId },
+        $pull: { likes: req.userId },
       });
       res.status(200).json("The post has been unliked");
     }
