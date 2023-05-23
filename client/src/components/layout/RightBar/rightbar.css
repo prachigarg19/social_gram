@@ -1,7 +1,12 @@
-.rightbar {
-    flex: 3.5;
+  .rightbar {
+      flex: 3.5;
+    }
+  .hideRightSidebar{
+    display: none;
   }
-  
+  .fullScreenSidebar{
+    width: 100%;
+  }
   .rightbarWrapper {
     padding: 20px 20px 0 0;
   }

@@ -6,9 +6,30 @@ import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import { Link } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../../../contexts/AuthContext";
+import MenuIcon from "@mui/icons-material/Menu";
+import { useEffect, useState } from "react";
+import { LayoutContext } from "../../../contexts/LayoutContext";
 
 export default function Header() {
   const { user } = useContext(AuthContext);
+  const {
+    isMobile,
+    openLeftMenu,
+    setOpenLeftMenu,
+    openRightMenu,
+    setOpenRightMenu,
+  } = useContext(LayoutContext);
+
+  const handleLeftBar = () => {
+    setOpenLeftMenu(!openLeftMenu);
+    setOpenRightMenu(false);
+  };
+
+  const handleRightBar = () => {
+    setOpenRightMenu(!openRightMenu);
+    setOpenLeftMenu(false);
+  };
+
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
   return (
     <div className="topbarContainer">
@@ -31,8 +52,13 @@ export default function Header() {
           <span className="topbarLink">Timeline</span>
         </div> */}
         <div className="topbarIcons">
+          {isMobile && (
+            <div className="topbarIconItem">
+              <MenuIcon onClick={() => handleLeftBar()} />
+            </div>
+          )}
           <div className="topbarIconItem">
-            <PersonIcon />
+            <PersonIcon onClick={() => handleRightBar()} />
             <span className="topbarIconBadge">1</span>
           </div>
           <div className="topbarIconItem">

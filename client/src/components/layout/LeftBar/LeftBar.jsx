@@ -1,5 +1,5 @@
 import "./leftbar.css";
-import React from "react";
+import React, { useContext } from "react";
 import RssFeedIcon from "@mui/icons-material/RssFeed";
 import ChatIcon from "@mui/icons-material/Chat";
 import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
@@ -11,10 +11,21 @@ import EventIcon from "@mui/icons-material/Event";
 import SchoolIcon from "@mui/icons-material/School";
 import { Users } from "../../../dummyData";
 import CloseFriend from "../../CloseFriend/CloseFriend";
+import { LayoutContext } from "../../../contexts/LayoutContext";
 
 const LeftBar = () => {
+  const { isMobile, openLeftMenu } = useContext(LayoutContext);
+
   return (
-    <div className="sidebar">
+    <div
+      className={
+        isMobile
+          ? openLeftMenu
+            ? "fullScreenSidebar"
+            : "hideLeftSidebar"
+          : "sidebar"
+      }
+    >
       <div className="sidebarWrapper">
         <ul className="sidebarList">
           <li className="sidebarListItem">

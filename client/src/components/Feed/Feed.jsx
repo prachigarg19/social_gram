@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./feed.css";
 import Share from "../Share/Share";
 import { Post } from "../Post/Post";
+import { LayoutContext } from "../../contexts/LayoutContext";
 
 const Feed = ({ username }) => {
   const [posts, setPosts] = useState(null);
+  const { isMobile, openLeftMenu, openRightMenu } = useContext(LayoutContext);
   useEffect(() => {
     fetch(
       `${
@@ -35,7 +37,11 @@ const Feed = ({ username }) => {
   }, [username]);
 
   return (
-    <div className="feed">
+    <div
+      className={
+        isMobile && (openLeftMenu || openRightMenu) ? "hideFeed" : "feed"
+      }
+    >
       <div className="feedWrapper">
         <Share />
         {posts && posts.map((p) => <Post key={p._id} post={p} />)}

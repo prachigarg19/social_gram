@@ -3,11 +3,13 @@ import "./rightbar.css";
 import { Users } from "../../../dummyData";
 import OnlineFriend from "../../OnlineFriend/OnlineFriend";
 import { AuthContext } from "../../../contexts/AuthContext";
+import { LayoutContext } from "../../../contexts/LayoutContext";
 
 const RightBar = ({ profile }) => {
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
   const { user } = useContext(AuthContext);
   const [friends, setFriends] = useState([]);
+  const { isMobile, openLeftMenu, openRightMenu } = useContext(LayoutContext);
 
   useEffect(() => {
     fetch(`http://localhost:8800/api/users/friends/${user._id}`, {
@@ -81,7 +83,15 @@ const RightBar = ({ profile }) => {
     );
   };
   return (
-    <div className="rightbar">
+    <div
+      className={
+        isMobile
+          ? openRightMenu
+            ? "fullScreenSidebar"
+            : "hideRightSidebar"
+          : "rightbar"
+      }
+    >
       <div className="rightbarWrapper">
         {profile ? <ProfileRightbar /> : <HomeRightbar />}
       </div>

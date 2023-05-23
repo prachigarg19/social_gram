@@ -5,7 +5,12 @@
     position: sticky;
     top: 50px;
   }
-  
+  .hideLeftSidebar{
+    display: none;
+  }
+  .fullScreenSidebar{
+    width: 100%;
+  }
   ::-webkit-scrollbar {
     width: 5px;
   }
