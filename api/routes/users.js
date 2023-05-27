@@ -108,9 +108,9 @@ router.put("/:id/follow", getUser, async (req, res) => {
         await User.findByIdAndUpdate(req.userId, {
           $push: { following: req.params.id },
         });
-        res.status(200).send("The follow request was successful");
+        res.status(200).json("The follow request was successful");
       } else {
-        res.status(403).send("You already follow the user");
+        res.status(403).json("You already follow the user");
       }
     } catch (e) {
       console.log(e);
@@ -136,9 +136,9 @@ router.put("/:id/unfollow", getUser, async (req, res) => {
         await User.findByIdAndUpdate(req.userId, {
           $pull: { following: req.params.id },
         });
-        res.status(200).send("The unfollow request was successful");
+        res.status(200).json("The unfollow request was successful");
       } else {
-        res.status(403).send("You already don't follow the user");
+        res.status(403).json("You already don't follow the user");
       }
     } catch (e) {
       console.log(e);

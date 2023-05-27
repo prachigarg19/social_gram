@@ -69,7 +69,7 @@ const Profile = () => {
             </div>
             <div className="profileRightBottom">
               <Feed username={username} />
-              <RightBar profile={user} />
+              <RightBar user={user} />
             </div>
           </div>
         </div>

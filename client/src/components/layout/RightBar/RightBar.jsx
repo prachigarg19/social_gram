@@ -4,15 +4,20 @@ import { Users } from "../../../dummyData";
 import OnlineFriend from "../../OnlineFriend/OnlineFriend";
 import { AuthContext } from "../../../contexts/AuthContext";
 import { LayoutContext } from "../../../contexts/LayoutContext";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
 
-const RightBar = ({ profile }) => {
+const RightBar = ({ user }) => {
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
-  const { user } = useContext(AuthContext);
+  const { user: currentUser, dispatch, token } = useContext(AuthContext);
   const [friends, setFriends] = useState([]);
-  const { isMobile, openLeftMenu, openRightMenu } = useContext(LayoutContext);
+  const { isMobile, openRightMenu } = useContext(LayoutContext);
+  const [isFollowing, setIsFollowing] = useState(
+    currentUser?.following?.includes(user?._id)
+  );
 
   useEffect(() => {
-    fetch(`http://localhost:8800/api/users/friends/${user._id}`, {
+    fetch(`http://localhost:8800/api/users/friends/${user?._id}`, {
       method: "GET", // or 'PUT'
       headers: {
         "Content-Type": "application/json",
@@ -26,6 +31,31 @@ const RightBar = ({ profile }) => {
         console.error("Error:", error);
       });
   }, []);
+
+  const friendRequest = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:8800/api/users/${user?._id}/${
+          isFollowing ? "unfollow" : "follow"
+        }`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "auth-token": token,
+          },
+        }
+      );
+      const data = await response.json();
+      dispatch({
+        type: `${isFollowing ? "UNFOLLOW" : "FOLLOW"}`,
+        payload: user._id,
+      });
+      setIsFollowing(!isFollowing);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const HomeRightbar = () => {
     return (
@@ -49,6 +79,12 @@ const RightBar = ({ profile }) => {
   const ProfileRightbar = () => {
     return (
       <>
+        {user?.username !== currentUser?.username && (
+          <button className="followButton" onClick={friendRequest}>
+            {isFollowing ? "Unfollow" : "Follow"}
+            {isFollowing ? <RemoveIcon /> : <AddIcon />}
+          </button>
+        )}
         <h4 className="rightbarTitle">User information</h4>
         <div className="rightbarInfo">
           <div className="rightbarInfoItem">
@@ -66,7 +102,7 @@ const RightBar = ({ profile }) => {
         </div>
         <h4 className="rightbarTitle">User friends</h4>
         <div className="rightbarFollowings">
-          {friends.map((u) => (
+          {friends?.map((u) => (
             <div className="rightbarFollowing" key={u._id}>
               <img
                 src={
@@ -93,7 +129,7 @@ const RightBar = ({ profile }) => {
       }
     >
       <div className="rightbarWrapper">
-        {profile ? <ProfileRightbar /> : <HomeRightbar />}
+        {user ? <ProfileRightbar /> : <HomeRightbar />}
       </div>
     </div>
   );
