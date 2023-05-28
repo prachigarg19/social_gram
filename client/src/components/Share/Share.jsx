@@ -11,34 +11,33 @@ const Share = () => {
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
   const descRef = useRef();
   const [file, setFile] = useState(null);
+  const [isImageUploading, setIsImageUploading] = useState(false);
 
   const clearFields = () => {
     setFile(null);
     descRef.current.value = "";
   };
 
-  const handlePostSubmit = (e) => {
+  const handlePostSubmit = async (e) => {
     e.preventDefault();
-    console.log(file);
     if (!file) return;
-    const data = { desc: descRef.current.value || "" };
 
-    fetch("http://localhost:8800/api/posts", {
-      method: "POST", // or 'PUT'
-      headers: {
-        "Content-Type": "application/json",
-        "auth-token": token,
-      },
-      body: JSON.stringify(data),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Success:", data);
-        clearFields();
-      })
-      .catch((error) => {
-        console.error("Error:", error);
+    setIsImageUploading(true);
+    const formData = new FormData();
+    formData.append("img", file);
+    formData.append("desc", descRef.current.value || "");
+    formData.append("userId", user._id);
+
+    try {
+      const response = await fetch("http://localhost:8800/api/posts", {
+        method: "POST", // or 'PUT'
+        body: formData,
       });
+      clearFields();
+    } catch (err) {
+      console.log(err);
+    }
+    setIsImageUploading(false);
   };
 
   return (
@@ -55,7 +54,7 @@ const Share = () => {
             alt=""
           />
           <input
-            placeholder={"What's in your mind " + user?.username + "?"}
+            placeholder={`What's in your mind ${user?.username || ""}?`}
             className="shareInput"
             ref={descRef}
           />
@@ -96,7 +95,7 @@ const Share = () => {
             <button
               className={`shareButton${file ? "" : " disabledShareButton"}`}
               type="submit"
-              disabled={!file}
+              disabled={!file || isImageUploading}
             >
               Share
             </button>

@@ -3,19 +3,61 @@ const router = express.Router();
 const Post = require("../models/Post");
 const User = require("../models/Users");
 const getUser = require("../middleware/getUser");
+const multer = require("multer");
+const admin = require("firebase-admin");
+const serviceAccount = require("../serviceAccountKey.json");
+const upload = multer({ dest: "temp/" });
+const fs = require("fs");
 
-//create a post
-router.post("/", getUser, async (req, res) => {
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  storageBucket: "gs://socialgram-e1c8e.appspot.com",
+});
+
+router.post("/", upload.single("img"), async (req, res) => {
   try {
-    const newPost = await new Post({
-      img: req.body.img,
-      desc: req.body.desc,
-      userId: req.userId,
+    const file = req.file; // Get the uploaded file from the request
+
+    if (!file) {
+      return res.status(400).send("No file uploaded.");
+    }
+
+    const bucket = admin.storage().bucket();
+    const uploadOptions = {
+      destination: "uploads/" + file.originalname,
+      metadata: {
+        contentType: file.mimetype,
+      },
+    };
+
+    bucket.upload(file.path, uploadOptions, async (err, uploadedFile) => {
+      if (err) {
+        console.error("Error uploading file:", err);
+        return res.status(500).json("Error uploading file.");
+      }
+
+      // Get the public URL of the uploaded file
+      const fileUrl = uploadedFile.publicUrl();
+
+      try {
+        const newPost = new Post({
+          img: fileUrl, // Store the file URL in the 'img' field of the post
+          desc: req.body.desc,
+          userId: req.body.userId,
+        });
+        const savedPost = await newPost.save();
+        res.status(200).json(savedPost);
+      } catch (error) {
+        console.error("Error creating post:", error);
+        res.status(500).json("Post not created");
+      } finally {
+        // Cleanup the temporary file after processing
+        fs.unlinkSync(file.path);
+      }
     });
-    const savedPost = await newPost.save();
-    res.status(200).json(savedPost);
-  } catch (e) {
-    res.status(500).send("Post not created");
+  } catch (error) {
+    console.error("Error uploading file:", error);
+    res.status(500).json("Error uploading file.");
   }
 });
 
