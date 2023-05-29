@@ -12,9 +12,11 @@ export const Post = ({ post }) => {
   const [isLiked, setIsLiked] = useState(post.likes.includes(user?._id));
   const [currentPostUser, setCurrentPostUser] = useState({});
   const [isReady, setIsReady] = useState(false);
+  const [postImg, setpostImg] = useState("");
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
 
   useEffect(() => {
+    //fetch user who has posted the post
     setIsReady(false);
     fetch(`http://localhost:8800/api/users?userId=${post.userId}`, {
       method: "GET",
@@ -33,6 +35,7 @@ export const Post = ({ post }) => {
   }, [post.userId, currentPostUser]);
 
   const likeHandler = () => {
+    //like-dislike post
     fetch(`http://localhost:8800/api/posts/${post._id}/like`, {
       method: "PUT",
       headers: {
@@ -53,6 +56,30 @@ export const Post = ({ post }) => {
         console.error("Error:", error);
       });
   };
+  //fetch image from firebase server
+  const fetchImage = async (fileName) => {
+    const imageResponse = await fetch(
+      `http://localhost:8800/api/images/${fileName}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (imageResponse.ok) {
+      const imageBlob = await imageResponse.blob();
+      setpostImg(URL.createObjectURL(imageBlob));
+    } else {
+      setpostImg(null);
+    }
+  };
+
+  useEffect(() => {
+    const fileName = decodeURIComponent(post.img).split("/").pop();
+    fetchImage(fileName);
+  }, []);
 
   return isReady ? (
     <div className="post">
@@ -76,7 +103,7 @@ export const Post = ({ post }) => {
         </div>
         <div className="postCenter">
           <span className="postText">{post?.desc}</span>
-          <img className="postImg" src={PF + post.img} alt="" />
+          <img className="postImg" src={postImg} alt="" />
         </div>
         <div className="postBottom">
           <div className="postBottomLeft">

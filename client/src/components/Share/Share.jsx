@@ -31,8 +31,12 @@ const Share = () => {
     try {
       const response = await fetch("http://localhost:8800/api/posts", {
         method: "POST", // or 'PUT'
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         body: formData,
       });
+      console.log(file);
       clearFields();
     } catch (err) {
       console.log(err);

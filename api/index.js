@@ -5,6 +5,7 @@ const morgan = require("morgan");
 const userRoutes = require("./routes/users");
 const authRoutes = require("./routes/auth");
 const postRoutes = require("./routes/posts");
+const imageRoute = require("./routes/image");
 const jsonwebtoken = require("jsonwebtoken");
 const cors = require("cors");
 
@@ -24,6 +25,7 @@ async function main() {
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
+app.use("/api/images", imageRoute);
 
 app.listen(8800, () => {
   console.log("started");
