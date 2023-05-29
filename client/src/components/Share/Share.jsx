@@ -65,7 +65,8 @@ const Share = () => {
         </div>
         {file && (
           <div className="postCenter">
-            <img className="postImg" src={PF + file.name} alt="" />
+            {/* create pseudo url to preview image */}
+            <img className="postImg" src={URL.createObjectURL(file)} alt="" />
           </div>
         )}
         <hr className="shareHr" />
