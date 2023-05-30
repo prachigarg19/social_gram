@@ -7,7 +7,10 @@ const multer = require("multer");
 const admin = require("firebase-admin");
 const serviceAccount = require("../serviceAccountKey.json");
 const upload = multer({ dest: "temp/" });
+const cache = require("memory-cache");
+const checkCache = require("../middleware/checkCache");
 const fs = require("fs");
+const mongoose = require("mongoose");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -106,12 +109,21 @@ router.put("/:id/like", getUser, async (req, res) => {
 });
 
 //GET ALL TIMELINE POSTS
-router.get("/timeline/:id", async (req, res) => {
+// the middleware function checkCache checks if the posts for the given id are already cached.
+//If so, it directly sends the cached posts in the response.
+//Otherwise, it proceeds to fetch the posts and store them in the cache with a specified expiration time (e.g., 1 minute).
+//Subsequent requests within the cache expiration period will be served from the cache without making new API calls.
+router.get("/timeline/:id", checkCache, async (req, res) => {
   //issue with /timeline is that it will be confused with get /id taking timeline as the id. To avoid this change router to /timeline/all
   try {
     let allPosts = [];
     //find current user
-    const user = await User.findById(req.params.id);
+    const userId = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      // Handle invalid ObjectId value
+      return res.status(400).json({ error: "Invalid user ID" });
+    }
+    const user = await User.findById(userId);
     const userPost = await Post.find({ userId: user._id });
     //to fetch everything inside map, use Promise.all
     const friendsPost = await Promise.all(
@@ -120,10 +132,14 @@ router.get("/timeline/:id", async (req, res) => {
       })
     );
     allPosts.push(...userPost);
+    userPost.map((post) => {
+      allPosts.push(post);
+    });
     // allPosts.push(...friendsPost);
     friendsPost.map((friend) => {
       friend.map((post) => allPosts.push(post));
     });
+    cache.put(req.params.id, allPosts, 60000);
     res.status(200).json(allPosts);
   } catch (e) {
     console.log(e);
