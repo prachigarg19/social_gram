@@ -80,6 +80,7 @@
       font-weight: 500;
       cursor: pointer;
       color: white;
+      width: 52px;
   }
 
   .disabledShareButton{

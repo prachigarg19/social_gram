@@ -5,13 +5,18 @@ import LabelIcon from "@mui/icons-material/Label";
 import RoomIcon from "@mui/icons-material/Room";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import { AuthContext } from "../../contexts/AuthContext";
+import CustomSnackbar from "../Snackbar/CustomSnackbar";
+import { useNavigate } from "react-router-dom";
+import { CircularProgress } from "@mui/material";
 
 const Share = () => {
   const { user, token } = useContext(AuthContext);
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
   const descRef = useRef();
   const [file, setFile] = useState(null);
-  const [isImageUploading, setIsImageUploading] = useState(false);
+  const [showSnackbar, setShowSnackbar] = useState(false);
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
   const clearFields = () => {
     setFile(null);
@@ -22,12 +27,11 @@ const Share = () => {
     e.preventDefault();
     if (!file) return;
 
-    setIsImageUploading(true);
     const formData = new FormData();
     formData.append("img", file);
     formData.append("desc", descRef.current.value || "");
     formData.append("userId", user._id);
-
+    setIsLoading(true);
     try {
       const response = await fetch("http://localhost:8800/api/posts", {
         method: "POST", // or 'PUT'
@@ -36,12 +40,13 @@ const Share = () => {
         },
         body: formData,
       });
-      console.log(file);
-      clearFields();
+      setShowSnackbar(true);
+      setIsLoading(false);
+      navigate(0);
     } catch (err) {
       console.log(err);
+      setIsLoading(false);
     }
-    setIsImageUploading(false);
   };
 
   return (
@@ -100,9 +105,13 @@ const Share = () => {
             <button
               className={`shareButton${file ? "" : " disabledShareButton"}`}
               type="submit"
-              disabled={!file || isImageUploading}
+              disabled={isLoading}
             >
-              Share
+              {isLoading ? (
+                <CircularProgress color="inherit" size={13} />
+              ) : (
+                "Share"
+              )}
             </button>
             <button className="shareButton" onClick={clearFields}>
               Cancel
@@ -110,6 +119,12 @@ const Share = () => {
           </div>
         </form>
       </div>
+      {showSnackbar && (
+        <CustomSnackbar
+          snackbarText={"Post has been shared successfully!"}
+          isVisible={showSnackbar}
+        />
+      )}
     </div>
   );
 };
