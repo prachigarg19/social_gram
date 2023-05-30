@@ -113,7 +113,7 @@ router.put("/:id/like", getUser, async (req, res) => {
 //If so, it directly sends the cached posts in the response.
 //Otherwise, it proceeds to fetch the posts and store them in the cache with a specified expiration time (e.g., 1 minute).
 //Subsequent requests within the cache expiration period will be served from the cache without making new API calls.
-router.get("/timeline/:id", checkCache, async (req, res) => {
+router.get("/timeline/:id", async (req, res) => {
   //issue with /timeline is that it will be confused with get /id taking timeline as the id. To avoid this change router to /timeline/all
   try {
     let allPosts = [];
@@ -123,6 +123,9 @@ router.get("/timeline/:id", checkCache, async (req, res) => {
       // Handle invalid ObjectId value
       return res.status(400).json({ error: "Invalid user ID" });
     }
+    const page = req.query.page || 1; // Get the page number from the query parameter, default to 1
+    const perPage = 5; // Number of posts per page
+
     const user = await User.findById(userId);
     const userPost = await Post.find({ userId: user._id });
     //to fetch everything inside map, use Promise.all
@@ -139,11 +142,19 @@ router.get("/timeline/:id", checkCache, async (req, res) => {
     friendsPost.map((friend) => {
       friend.map((post) => allPosts.push(post));
     });
-    cache.put(req.params.id, allPosts, 60000);
-    res.status(200).json(allPosts);
+    // cache.put(req.params.id, allPosts, 60000);
+    const startIndex = perPage * (page - 1); // Starting index for slicing posts
+    const endIndex = perPage * page; // Ending index for slicing posts
+    const slicedPosts = allPosts.slice(startIndex, endIndex);
+    res.status(200).json(slicedPosts);
   } catch (e) {
     console.log(e);
   }
+  // The page variable is obtained from the query parameter req.query.page. It represents the current page number and defaults to 1 if not provided.
+  // The perPage variable is set to 5, which determines the number of posts to be returned per page.
+  // The skip() method is used to skip the appropriate number of posts based on the current page number and perPage value.
+  // The limit() method is used to limit the number of posts fetched per page to perPage.
+  // The posts are sorted in descending order based on their createdAt field using the sort() method.
 });
 
 //GET A POST
@@ -161,7 +172,12 @@ router.get("/profile/:username", async (req, res) => {
   try {
     //finding user id with username as parameter
     const user = await User.findOne({ username: req.params.username });
-    const posts = await Post.find({ userId: user._id });
+    const page = req.query.page || 1; // Get the page number from the query parameter, default to 1
+    const perPage = 5; // Number of posts per page
+    const posts = await Post.find({ userId: user._id })
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * perPage)
+      .limit(perPage);
     res.status(200).json(posts);
   } catch (e) {
     console.log(e);

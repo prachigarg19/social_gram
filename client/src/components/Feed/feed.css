@@ -8,3 +8,17 @@
 .hideFeed{
     display: none;
 }
+.loadMorebuttonContainer {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+.loadMoreButton {
+    border: none;
+    padding: 7px;
+    border-radius: 5px;
+    background-color: #1877f2;
+    font-weight: 500;
+    cursor: pointer;
+    color: white;
+}
