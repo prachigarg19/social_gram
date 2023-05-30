@@ -17,10 +17,11 @@ const RightBar = ({ user }) => {
   );
 
   useEffect(() => {
-    fetch(`http://localhost:8800/api/users/friends/${user?._id}`, {
+    fetch(`http://localhost:8800/api/users/friends`, {
       method: "GET", // or 'PUT'
       headers: {
         "Content-Type": "application/json",
+        "auth-token": token,
       },
     })
       .then((response) => response.json())
@@ -102,18 +103,21 @@ const RightBar = ({ user }) => {
         </div>
         <h4 className="rightbarTitle">User friends</h4>
         <div className="rightbarFollowings">
-          {friends?.map((u) => (
-            <div className="rightbarFollowing" key={u._id}>
-              <img
-                src={
-                  u.profilePic ? PF + u.profilePic : PF + "person/noAvatar.png"
-                }
-                alt=""
-                className="rightbarFollowingImg"
-              />
-              <span className="rightbarFollowingName">{u?.username}</span>
-            </div>
-          ))}
+          {friends.length > 0 &&
+            friends?.map((u) => (
+              <div className="rightbarFollowing" key={u._id}>
+                <img
+                  src={
+                    u.profilePic
+                      ? PF + u.profilePic
+                      : PF + "person/noAvatar.png"
+                  }
+                  alt=""
+                  className="rightbarFollowingImg"
+                />
+                <span className="rightbarFollowingName">{u?.username}</span>
+              </div>
+            ))}
         </div>
       </>
     );

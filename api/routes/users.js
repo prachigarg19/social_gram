@@ -64,15 +64,14 @@ router.get("/", async (req, res) => {
 });
 
 //FETCH FOLLOWINGS
-router.get("/friends/:userId", async (req, res) => {
+router.get("/friends", getUser, async (req, res) => {
   try {
-    const user = await User.findById(req.params.userId);
+    const user = await User.findById(req.userId);
     // if (!user) {
     //   // User not found
     //   res.status(404).json({ message: "User not found" });
     //   return;
     // }
-    console.log(req.params.userId);
     const friends = await Promise.all(
       user.following.map((followerId) => {
         return User.findById(followerId);
