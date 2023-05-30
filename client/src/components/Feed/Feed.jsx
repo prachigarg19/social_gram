@@ -3,16 +3,18 @@ import "./feed.css";
 import Share from "../Share/Share";
 import { Post } from "../Post/Post";
 import { LayoutContext } from "../../contexts/LayoutContext";
+import { AuthContext } from "../../contexts/AuthContext";
 
 const Feed = ({ username }) => {
   const [posts, setPosts] = useState(null);
+  const { user } = useContext(AuthContext);
   const { isMobile, openLeftMenu, openRightMenu } = useContext(LayoutContext);
   useEffect(() => {
     fetch(
       `${
         username
           ? `http://localhost:8800/api/posts/profile/${username}`
-          : "http://localhost:8800/api/posts/timeline/643283848c419483abc8e1df"
+          : `http://localhost:8800/api/posts/timeline/${user?._id}`
       }`,
       {
         method: "GET",
@@ -23,18 +25,18 @@ const Feed = ({ username }) => {
     )
       .then((response) => response.json())
       .then((data) => {
-        // setPosts(
-        //   data.sort(
-        //     (post1, post2) =>
-        //       new Date(post2.createdAt) - new Date(post1.createdAt)
-        //   )
-        // );
+        setPosts(
+          data.sort(
+            (post1, post2) =>
+              new Date(post2.createdAt) - new Date(post1.createdAt)
+          )
+        );
         setPosts(data);
       })
       .catch((error) => {
         console.error("Error:", error);
       });
-  }, [username]);
+  }, [username, user?.id]);
 
   return (
     <div
