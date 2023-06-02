@@ -11,6 +11,7 @@ const cache = require("memory-cache");
 const checkCache = require("../middleware/checkCache");
 const fs = require("fs");
 const mongoose = require("mongoose");
+const { fetchProjectData } = require("../dbUtils");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -127,11 +128,11 @@ router.get("/timeline/:id", async (req, res) => {
     const perPage = 5; // Number of posts per page
 
     const user = await User.findById(userId);
-    const userPost = await Post.find({ userId: user._id });
+    const userPost = await fetchProjectData(user._id);
     //to fetch everything inside map, use Promise.all
     const friendsPost = await Promise.all(
       user.following.map((followerId) => {
-        return Post.find({ userId: followerId });
+        return fetchProjectData(followerId);
       })
     );
     allPosts.push(...userPost);
@@ -174,11 +175,16 @@ router.get("/profile/:username", async (req, res) => {
     const user = await User.findOne({ username: req.params.username });
     const page = req.query.page || 1; // Get the page number from the query parameter, default to 1
     const perPage = 5; // Number of posts per page
-    const posts = await Post.find({ userId: user._id })
-      .sort({ createdAt: -1 })
-      .skip((page - 1) * perPage)
-      .limit(perPage);
-    res.status(200).json(posts);
+
+    //aggregate data
+    const projectData = await fetchProjectData(user._id);
+
+    //pagination
+    const startIndex = perPage * (page - 1); // Starting index for slicing posts
+    const endIndex = perPage * page; // Ending index for slicing posts
+    const slicedPosts = projectData.slice(startIndex, endIndex);
+
+    res.status(200).json(slicedPosts);
   } catch (e) {
     console.log(e);
   }

@@ -15,25 +15,6 @@ export const Post = ({ post }) => {
   const [postImg, setpostImg] = useState("");
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
 
-  useEffect(() => {
-    //fetch user who has posted the post
-    setIsReady(false);
-    fetch(`http://localhost:8800/api/users?userId=${post.userId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setCurrentPostUser(Object.assign(currentPostUser, data));
-        setIsReady(true);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  }, [post.userId, currentPostUser]);
-
   const likeHandler = () => {
     //like-dislike post
     fetch(`http://localhost:8800/api/posts/${post._id}/like`, {
@@ -58,6 +39,7 @@ export const Post = ({ post }) => {
   };
   //fetch image from firebase server
   const fetchImage = async (fileName) => {
+    setIsReady(false);
     const imageResponse = await fetch(
       `http://localhost:8800/api/images/${fileName}`,
       {
@@ -71,8 +53,10 @@ export const Post = ({ post }) => {
     if (imageResponse.ok) {
       const imageBlob = await imageResponse.blob();
       setpostImg(URL.createObjectURL(imageBlob));
+      setIsReady(true);
     } else {
       setpostImg(null);
+      setIsReady(true);
     }
   };
 
@@ -86,15 +70,15 @@ export const Post = ({ post }) => {
       <div className="postWrapper">
         <div className="postTop">
           <div className="postTopLeft">
-            <Link to={`/profile/${currentPostUser.username}`}>
+            <Link to={`/profile/${post.user.username}`}>
               <img
                 className="postProfileImg"
                 //find currentPostUser with id who posted the picture
-                src={PF + currentPostUser?.profilePic || "/person/noAvatar.png"}
+                src={PF + post.user?.profilePic || "/person/noAvatar.png"}
                 alt=""
               />
             </Link>
-            <span className="postUsername">{currentPostUser?.username}</span>
+            <span className="postUsername">{post.user?.username}</span>
             <span className="postDate">{format(post.createdAt)}</span>
           </div>
           <div className="postTopRight">
