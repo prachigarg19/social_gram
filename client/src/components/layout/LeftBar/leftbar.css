@@ -34,9 +34,19 @@
   .sidebarListItem {
     display: flex;
     align-items: center;
-    margin-bottom: 20px;
+    padding: 0 0 20px 0;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    color: #ffffff;
   }
-  
+
+  .sidebarListItem:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0 10px rgba(27, 39, 48, 0.2);
+      z-index: 2;
+  }
+
   .sidebarIcon {
     margin-right: 15px;
   }

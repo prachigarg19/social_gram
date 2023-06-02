@@ -4,12 +4,12 @@
     border-radius: 10px;
     -webkit-box-shadow: 0px 0px 16px -8px rgba(0, 0, 0, 0.68);
     box-shadow: 0px 0px 16px -8px rgba(0, 0, 0, 0.68);
+    background-color: #1B2730;
   }
   
   .shareWrapper {
     padding: 1rem;
   }
-  
   .shareTop {
     display: flex;
     align-items: center;
@@ -26,6 +26,8 @@
   .shareInput {
     border: none;
     width: 80%;
+    background-color: #1B2730;
+    color: #fff;
   }
   
   .shareInput:focus {
@@ -34,12 +36,13 @@
   
   .shareHr {
     margin: 1rem 0.5rem;
+    border-color: #516677;
   }
   
   .shareBottom {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: space-evenly;
     flex-wrap: wrap;
     row-gap: 13px;
   }
@@ -47,42 +50,45 @@
   .shareOptions{
       display: flex;
       margin-left: 0.5rem;
-      gap:1rem;
+      gap:2rem;
   }
   
   .shareOption{
       display: flex;
       align-items: center;
-      margin-right: 0.5rem;
+      margin-right: 1rem;
       cursor: pointer;
+      border: 2px solid #516677;
+      border-radius: 20px;
+      padding: 5px 10px;
+      gap: 5px;
   }
   
   .shareIcon{
-      font-size: 18px;
-      margin-right: 0.3rem;
+      font-size: 14px;
   }
   
   .shareOptionText{
-      font-size: 14px;
+      font-size: 12px;
       font-weight: 500;
   }
   
   .shareButtonContainer{
     display: flex;
-    gap: 3px;
+    gap: 7px;
+    width: 100%;
   }
 
   .shareButton{
-      border: none;
-      padding: 7px;
-      border-radius: 5px;
-      background-color: green;
+      background-color: #1B2730;
       font-weight: 500;
       cursor: pointer;
-      color: white;
-      width: 52px;
+      width: 62px;
+      border: 2px solid #516677;
+      border-radius: 20px;
+      padding: 5px 10px;
+      transition: cubic-bezier(0, 0.95, 0.49, 0.65) 0.8s;
   }
-
   .disabledShareButton{
     background-color: grey;
   }
@@ -94,19 +100,38 @@
     object-fit: contain;
  }
 
- @media (max-width: 500px){
-  
-  .shareOptions{
-      margin-left: 0;
-  }
+ 
+ .shareButton:hover, .shareOption:hover {
+  background-color: #516677;
+  color: white;
+  box-shadow: 0px 10px 20px 5px rgba(0, 0, 0, 0.5);
+  transform: translateY(-1.7px); 
+  animation: glowEffect 1.5s infinite;
+}
 
-  .shareOption{
-      margin-right: 0;
+@keyframes glowEffect {
+  0% {
+    box-shadow: 0px 0px 5px 0px rgba(61, 92, 109, 0.2);
   }
+  50% {
+    box-shadow: 0px 0px 20px 10px rgba(61, 92, 109, 0.3);
+  }
+  100% {
+    box-shadow: 0px 0px 5px 0px rgba(61, 92, 109, 0.4);
+  }
+}
+
+.disabledShareButton:hover{
+  background-color: grey;
+  transform: translateY(0);
+}
+
+ @media (max-width: 500px){
 
   .shareIcon{
-      margin-right: 0;
-  }
+    margin-left: auto;
+    margin-right: auto;
+  } 
   .shareOptionText{
     display: none;
 }

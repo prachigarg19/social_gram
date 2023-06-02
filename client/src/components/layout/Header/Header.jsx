@@ -9,6 +9,10 @@ import { AuthContext } from "../../../contexts/AuthContext";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useEffect, useState } from "react";
 import { LayoutContext } from "../../../contexts/LayoutContext";
+import MailIcon from "@mui/icons-material/Mail";
+import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
+import PermIdentityIcon from "@mui/icons-material/PermIdentity";
+import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 
 export default function Header() {
   const { user } = useContext(AuthContext);
@@ -58,15 +62,15 @@ export default function Header() {
             </div>
           )}
           <div className="topbarIconItem">
-            <PersonIcon onClick={() => handleRightBar()} />
+            <PermIdentityIcon onClick={() => handleRightBar()} />
             <span className="topbarIconBadge">1</span>
           </div>
           <div className="topbarIconItem">
-            <ChatBubbleIcon />
+            <ChatBubbleOutlineIcon color={"#516677"} />
             <span className="topbarIconBadge">2</span>
           </div>
           <div className="topbarIconItem">
-            <NotificationsIcon />
+            <NotificationsNoneIcon />
             <span className="topbarIconBadge">1</span>
           </div>
           <Link to={user?.username ? `/profile/${user?.username}` : "/"}>
