@@ -7,8 +7,6 @@ const multer = require("multer");
 const admin = require("firebase-admin");
 const serviceAccount = require("../serviceAccountKey.json");
 const upload = multer({ dest: "temp/" });
-const cache = require("memory-cache");
-const checkCache = require("../middleware/checkCache");
 const fs = require("fs");
 const mongoose = require("mongoose");
 const { fetchProjectData } = require("../dbUtils");
@@ -110,10 +108,6 @@ router.put("/:id/like", getUser, async (req, res) => {
 });
 
 //GET ALL TIMELINE POSTS
-// the middleware function checkCache checks if the posts for the given id are already cached.
-//If so, it directly sends the cached posts in the response.
-//Otherwise, it proceeds to fetch the posts and store them in the cache with a specified expiration time (e.g., 1 minute).
-//Subsequent requests within the cache expiration period will be served from the cache without making new API calls.
 router.get("/timeline/:id", async (req, res) => {
   //issue with /timeline is that it will be confused with get /id taking timeline as the id. To avoid this change router to /timeline/all
   try {
@@ -139,6 +133,10 @@ router.get("/timeline/:id", async (req, res) => {
     userPost.map((post) => {
       allPosts.push(post);
     });
+    //sort posts
+    allPosts.sort(
+      (post1, post2) => new Date(post2.createdAt) - new Date(post1.createdAt)
+    );
     // allPosts.push(...friendsPost);
     friendsPost.map((friend) => {
       friend.map((post) => allPosts.push(post));
@@ -178,7 +176,10 @@ router.get("/profile/:username", async (req, res) => {
 
     //aggregate data
     const projectData = await fetchProjectData(user._id);
-
+    //sort posts
+    projectData.sort(
+      (post1, post2) => new Date(post2.createdAt) - new Date(post1.createdAt)
+    );
     //pagination
     const startIndex = perPage * (page - 1); // Starting index for slicing posts
     const endIndex = perPage * page; // Ending index for slicing posts
