@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
 import "./rightbar.css";
-import { Users } from "../../../dummyData";
-import OnlineFriend from "../../OnlineFriend/OnlineFriend";
 import { AuthContext } from "../../../contexts/AuthContext";
 import { LayoutContext } from "../../../contexts/LayoutContext";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+import fetchImage from "../../../imageUtils";
+import { Link } from "react-router-dom";
 
 const RightBar = ({ user }) => {
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
@@ -15,6 +15,7 @@ const RightBar = ({ user }) => {
   const [isFollowing, setIsFollowing] = useState(
     currentUser?.following?.includes(user?._id)
   );
+  const [friendsImg, setFriendsImg] = useState([]);
 
   useEffect(() => {
     fetch(`http://localhost:8800/api/users/friends`, {
@@ -32,6 +33,19 @@ const RightBar = ({ user }) => {
         console.error("Error:", error);
       });
   }, []);
+
+  const fetchData = async (img) => {
+    const postName = decodeURIComponent(img).split("/").pop();
+    const postImageUrl = await fetchImage(postName, token);
+    setFriendsImg((prevFriendsImg) => [
+      ...(prevFriendsImg || []),
+      postImageUrl,
+    ]);
+  };
+
+  useEffect(() => {
+    friends.map((friend) => fetchData(friend.profilePic));
+  }, [friends]);
 
   const friendRequest = async () => {
     try {
@@ -70,9 +84,24 @@ const RightBar = ({ user }) => {
         <img className="rightbarAd" src={`${PF}/ad.png`} alt="" />
         <h4 className="rightbarTitle">Online Friends</h4>
         <ul className="rightbarFriendList">
-          {Users.map((u) => (
-            <OnlineFriend key={u.id} user={u} />
-          ))}
+          {friends.length > 0 &&
+            friends?.map((u, index) => (
+              <li className="rightbarFriend">
+                <div className="rightbarProfileImgContainer">
+                  <img
+                    className="rightbarProfileImg"
+                    src={
+                      friendsImg[index]
+                        ? friendsImg[index]
+                        : `${PF}/person/noAvatar.png`
+                    }
+                    alt=""
+                  />
+                  <span className="rightbarOnline"></span>
+                </div>
+                <span className="rightbarUsername">{u.username}</span>
+              </li>
+            ))}
         </ul>
       </>
     );
@@ -101,20 +130,22 @@ const RightBar = ({ user }) => {
             <span className="rightbarInfoValue">{user?.relationship}</span>
           </div>
         </div>
-        <h4 className="rightbarTitle">User friends</h4>
+        <h4 className="rightbarTitle">Your friends</h4>
         <div className="rightbarFollowings">
           {friends.length > 0 &&
-            friends?.map((u) => (
+            friends?.map((u, index) => (
               <div className="rightbarFollowing" key={u._id}>
-                <img
-                  src={
-                    u.profilePic
-                      ? PF + u.profilePic
-                      : PF + "person/noAvatar.png"
-                  }
-                  alt=""
-                  className="rightbarFollowingImg"
-                />
+                <Link to={`/profile/${u?.username}`}>
+                  <img
+                    src={
+                      friendsImg[index]
+                        ? friendsImg[index]
+                        : `${PF}/person/noAvatar.png`
+                    }
+                    alt=""
+                    className="rightbarFollowingImg"
+                  />
+                </Link>
                 <span className="rightbarFollowingName">{u?.username}</span>
               </div>
             ))}
