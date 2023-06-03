@@ -1,8 +1,5 @@
 import "./header.css";
 import SearchIcon from "@mui/icons-material/Search";
-import PersonIcon from "@mui/icons-material/Person";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import { Link } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../../../contexts/AuthContext";
@@ -15,7 +12,7 @@ import PermIdentityIcon from "@mui/icons-material/PermIdentity";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 
 export default function Header() {
-  const { user } = useContext(AuthContext);
+  const { user, profileImg } = useContext(AuthContext);
   const {
     isMobile,
     openLeftMenu,
@@ -75,11 +72,7 @@ export default function Header() {
           </div>
           <Link to={user?.username ? `/profile/${user?.username}` : "/"}>
             <img
-              src={
-                user?.profilePic
-                  ? PF + user.profilePic
-                  : PF + "person/noAvatar.png"
-              }
+              src={profileImg ? profileImg : `${PF}/person/noAvatar.png`}
               alt=""
               className="topbarImg topbarIconItem"
             />
