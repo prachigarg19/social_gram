@@ -2,6 +2,10 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/Users");
 const getUser = require("../middleware/getUser");
+const multer = require("multer");
+const upload = multer({ dest: "temp/" });
+const admin = require("firebase-admin");
+const fs = require("fs");
 
 //UPDATE USER
 router.put("/:id", getUser, async (req, res) => {
@@ -28,6 +32,58 @@ router.put("/:id", getUser, async (req, res) => {
   }
 });
 
+//CHANGE PHOTO
+router.put("/upload/:type/:id", upload.single("img"), async (req, res) => {
+  if (!req.body.isAdmin) return res.status(500).send("Not authorised");
+  try {
+    const file = req.file; // Get the uploaded file from the request
+
+    if (!file) {
+      return res.status(400).send("No file uploaded.");
+    }
+
+    const bucket = admin.storage().bucket();
+    const uploadOptions = {
+      destination: "uploads/" + file.originalname,
+      metadata: {
+        contentType: file.mimetype,
+      },
+    };
+
+    bucket.upload(file.path, uploadOptions, async (err, uploadedFile) => {
+      if (err) {
+        console.error("Error uploading file:", err);
+        return res.status(500).json("Error uploading file.");
+      }
+
+      // Get the public URL of the uploaded file
+      const fileUrl = uploadedFile.publicUrl();
+      let updateField;
+      if (req.params.type === "profilePic") {
+        updateField = "profilePic";
+      } else if (req.params.type === "coverPic") {
+        updateField = "coverPic";
+      } else {
+        return res.status(400).send("Invalid upload type.");
+      }
+      try {
+        const user = await User.findByIdAndUpdate(req.params.id, {
+          $set: { [updateField]: fileUrl },
+        });
+        return res.status(200).send("account has been updated");
+      } catch (error) {
+        console.error("Error creating post:", error);
+        return res.status(500).json("Post not created");
+      } finally {
+        // Cleanup the temporary file after processing
+        fs.unlinkSync(file.path);
+      }
+    });
+  } catch (error) {
+    console.error("Error uploading file:", error);
+    res.status(500).json("Error uploading file.");
+  }
+});
 //DELETE A USER
 
 router.delete("/:id", getUser, async (req, res) => {

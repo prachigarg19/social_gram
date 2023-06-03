@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import "./App.css";
 import Home from "./pages/Home/Home";
 import { AuthContext } from "./contexts/AuthContext";
@@ -11,9 +11,32 @@ import {
 import Register from "./pages/Register/Register";
 import Login from "./pages/Login/Login";
 import Profile from "./pages/Profile/Profile";
+import fetchImage from "./imageUtils";
 
 function App() {
-  const { user } = useContext(AuthContext);
+  const { user, token, setCoverImg, setProfileImg } = useContext(AuthContext);
+
+  const fetchData = async () => {
+    const coverfileName = decodeURIComponent(user?.coverPic).split("/").pop();
+    if (coverfileName !== undefined) {
+      const coverImg = await fetchImage(coverfileName, "cover", token);
+      setCoverImg(coverImg);
+    }
+
+    const profilefileName = decodeURIComponent(user?.profilePic)
+      .split("/")
+      .pop();
+    if (profilefileName !== undefined) {
+      const profileImg = await fetchImage(profilefileName, "profile", token);
+      setProfileImg(profileImg);
+    }
+  };
+
+  useEffect(() => {
+    if (!user) return;
+    fetchData();
+  }, [user]);
+
   return (
     <Router>
       <Routes>
