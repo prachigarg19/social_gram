@@ -13,6 +13,9 @@ export const AuthContextProvider = ({ children }) => {
   const [state, dispatch] = useReducer(AuthReducer, INITIAL_STATE);
   const [loggedInUser, setLoggedInUser] = useState(null);
   const [token, setToken] = useState(null);
+  const [profileImg, setProfileImg] = useState("");
+  const [coverImg, setCoverImg] = useState("");
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -41,6 +44,10 @@ export const AuthContextProvider = ({ children }) => {
         error: state.error,
         dispatch,
         token: token,
+        profileImg: profileImg,
+        coverImg: coverImg,
+        setProfileImg: setProfileImg,
+        setCoverImg: setCoverImg,
       }}
     >
       {children}

@@ -7,8 +7,14 @@ const admin = require("firebase-admin");
 router.get("/:filename", async (req, res) => {
   try {
     const { filename } = req.params;
+    if (!filename) res.status(404).json("File name is not valid");
     const bucket = admin.storage().bucket();
     const file = bucket.file("uploads/" + filename);
+    // Check if the file exists
+    const [exists] = await file.exists();
+    if (!exists) {
+      throw new Error("File not found");
+    }
     const stream = file.createReadStream();
 
     // Set the appropriate CORS headers
@@ -19,7 +25,7 @@ router.get("/:filename", async (req, res) => {
     stream.pipe(res);
   } catch (error) {
     console.error("Error fetching image:", error);
-    res.status(500).send("Error fetching image.");
+    res.status(500).json("Error fetching image.");
   }
 });
 
