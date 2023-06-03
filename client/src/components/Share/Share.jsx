@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { CircularProgress } from "@mui/material";
 
 const Share = () => {
-  const { user, token } = useContext(AuthContext);
+  const { user, token, profileImg } = useContext(AuthContext);
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
   const descRef = useRef();
   const [file, setFile] = useState(null);
@@ -55,11 +55,7 @@ const Share = () => {
         <div className="shareTop">
           <img
             className="shareProfileImg"
-            src={
-              user?.profilePic
-                ? PF + user.profilePic
-                : PF + "person/noAvatar.png"
-            }
+            src={profileImg ? profileImg : `${PF}/person/noAvatar.png`}
             alt=""
           />
           <input

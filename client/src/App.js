@@ -19,7 +19,7 @@ function App() {
   const fetchData = async () => {
     const coverfileName = decodeURIComponent(user?.coverPic).split("/").pop();
     if (coverfileName !== undefined) {
-      const coverImg = await fetchImage(coverfileName, "cover", token);
+      const coverImg = await fetchImage(coverfileName, token);
       setCoverImg(coverImg);
     }
 
@@ -27,7 +27,7 @@ function App() {
       .split("/")
       .pop();
     if (profilefileName !== undefined) {
-      const profileImg = await fetchImage(profilefileName, "profile", token);
+      const profileImg = await fetchImage(profilefileName, token);
       setProfileImg(profileImg);
     }
   };

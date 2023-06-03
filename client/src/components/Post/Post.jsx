@@ -5,14 +5,16 @@ import "./post.css";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthContext";
 import { format } from "timeago.js";
+import fetchImage from "../../imageUtils";
+import { CircularProgress } from "@mui/material";
 
 export const Post = ({ post }) => {
   const { user, token } = useContext(AuthContext);
   const [like, setLike] = useState(post.likes.length);
   const [isLiked, setIsLiked] = useState(post.likes.includes(user?._id));
-  const [currentPostUser, setCurrentPostUser] = useState({});
-  const [isReady, setIsReady] = useState(false);
+  const [isReady, setIsReady] = useState(true);
   const [postImg, setpostImg] = useState("");
+  const [localProfileImg, setLocalProfileImg] = useState("");
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
 
   const likeHandler = () => {
@@ -37,32 +39,20 @@ export const Post = ({ post }) => {
         console.error("Error:", error);
       });
   };
-  //fetch image from firebase server
-  const fetchImage = async (fileName) => {
-    setIsReady(false);
-    const imageResponse = await fetch(
-      `http://localhost:8800/api/images/${fileName}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
 
-    if (imageResponse.ok) {
-      const imageBlob = await imageResponse.blob();
-      setpostImg(URL.createObjectURL(imageBlob));
-      setIsReady(true);
-    } else {
-      setpostImg(null);
-      setIsReady(true);
-    }
+  const fetchData = async () => {
+    const postName = decodeURIComponent(post.img).split("/").pop();
+    const postImageUrl = await fetchImage(postName, token);
+    setpostImg(postImageUrl);
+    const profileName = decodeURIComponent(post.user.profilePic)
+      .split("/")
+      .pop();
+    const profileImgUrl = await fetchImage(profileName, token);
+    setLocalProfileImg(profileImgUrl);
   };
-
   useEffect(() => {
-    const fileName = decodeURIComponent(post.img).split("/").pop();
-    fetchImage(fileName);
+    fetchData();
+    setIsReady(true);
   }, []);
 
   return isReady ? (
@@ -74,7 +64,11 @@ export const Post = ({ post }) => {
               <img
                 className="postProfileImg"
                 //find currentPostUser with id who posted the picture
-                src={PF + post.user?.profilePic || "/person/noAvatar.png"}
+                src={
+                  localProfileImg
+                    ? localProfileImg
+                    : `${PF}/person/noAvatar.png`
+                }
                 alt=""
               />
             </Link>
@@ -87,7 +81,11 @@ export const Post = ({ post }) => {
         </div>
         <div className="postCenter">
           <span className="postText">{post?.desc}</span>
-          <img className="postImg" src={postImg} alt="" />
+          {postImg ? (
+            <img className="postImg" src={postImg} alt="" />
+          ) : (
+            <CircularProgress size={12} />
+          )}
         </div>
         <div className="postBottom">
           <div className="postBottomLeft">
