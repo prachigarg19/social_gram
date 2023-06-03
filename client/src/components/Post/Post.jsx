@@ -84,7 +84,7 @@ export const Post = ({ post }) => {
           {postImg ? (
             <img className="postImg" src={postImg} alt="" />
           ) : (
-            <CircularProgress size={12} />
+            <CircularProgress size={12} className="circularProgress" />
           )}
         </div>
         <div className="postBottom">

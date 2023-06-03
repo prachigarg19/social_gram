@@ -96,11 +96,13 @@ const RightBar = ({ user }) => {
             friends?.map((u, index) => (
               <li className="rightbarFriend">
                 <div className="rightbarProfileImgContainer">
-                  <img
-                    className="rightbarProfileImg"
-                    src={friendImages[index]}
-                    alt=""
-                  />
+                  <Link to={`/profile/${u?.username}`}>
+                    <img
+                      className="rightbarProfileImg"
+                      src={friendImages[index]}
+                      alt=""
+                    />
+                  </Link>
                   <span className="rightbarOnline"></span>
                 </div>
                 <span className="rightbarUsername">{u.username}</span>
