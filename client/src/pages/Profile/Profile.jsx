@@ -20,13 +20,14 @@ const style = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: 400,
-  // bgcolor: "trans",
-  border: "2px solid ",
+  bgcolor: "#1B2730;",
+  border: "2px solid #516677",
   boxShadow: 24,
   zIndex: 999,
   pt: 2,
   px: 4,
   pb: 3,
+  boxShadow: "0px 10px 20px 5px rgba(0, 0, 0, 0.5)",
 };
 
 const Profile = () => {
@@ -205,8 +206,8 @@ const Profile = () => {
                   aria-labelledby="parent-modal-title"
                   aria-describedby="parent-modal-description"
                 >
-                  <Box sx={{ ...style, width: 400 }}>
-                    <div className="postCenter">
+                  <Box sx={{ ...style, width: 400 }} className="modal">
+                    <div>
                       {/* create pseudo url to preview image */}
                       <img
                         className="postImg"
@@ -214,21 +215,23 @@ const Profile = () => {
                         alt=""
                       />
 
-                      <button
-                        onClick={() => {
-                          if (profileFile)
-                            updateProfile("profilePic", profileFile);
-                          else if (coverFile)
-                            updateProfile("coverPic", coverFile);
-                        }}
-                      >
-                        {isUploading ? (
-                          <CircularProgress color="inherit" size={13} />
-                        ) : (
-                          "Share"
-                        )}
-                      </button>
-                      <button onClick={handleClose}>Cancel</button>
+                      <div>
+                        <button
+                          onClick={() => {
+                            if (profileFile)
+                              updateProfile("profilePic", profileFile);
+                            else if (coverFile)
+                              updateProfile("coverPic", coverFile);
+                          }}
+                        >
+                          {isUploading ? (
+                            <CircularProgress color="inherit" size={13} />
+                          ) : (
+                            "Share"
+                          )}
+                        </button>
+                        <button onClick={handleClose}>Cancel</button>
+                      </div>
                     </div>
                   </Box>
                 </Modal>
