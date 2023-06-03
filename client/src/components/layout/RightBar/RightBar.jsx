@@ -15,7 +15,7 @@ const RightBar = ({ user }) => {
   const [isFollowing, setIsFollowing] = useState(
     currentUser?.following?.includes(user?._id)
   );
-  const [friendsImg, setFriendsImg] = useState([]);
+  const [friendImages, setFriendImages] = useState([]);
 
   useEffect(() => {
     fetch(`http://localhost:8800/api/users/friends`, {
@@ -28,6 +28,9 @@ const RightBar = ({ user }) => {
       .then((response) => response.json())
       .then((data) => {
         setFriends(data);
+        if (friends) {
+          friends.map((friend) => fetchData(friend));
+        }
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -37,14 +40,19 @@ const RightBar = ({ user }) => {
   const fetchData = async (img) => {
     const postName = decodeURIComponent(img).split("/").pop();
     const postImageUrl = await fetchImage(postName, token);
-    setFriendsImg((prevFriendsImg) => [
-      ...(prevFriendsImg || []),
-      postImageUrl,
-    ]);
+    return postImageUrl ? postImageUrl : `${PF}/person/noAvatar.png`;
   };
 
   useEffect(() => {
-    friends.map((friend) => fetchData(friend.profilePic));
+    const fetchFriendImages = async () => {
+      const imagePromises = friends.map((friend) =>
+        fetchData(friend.profilePic)
+      );
+      const images = await Promise.all(imagePromises);
+      setFriendImages(images);
+    };
+
+    fetchFriendImages();
   }, [friends]);
 
   const friendRequest = async () => {
@@ -90,11 +98,7 @@ const RightBar = ({ user }) => {
                 <div className="rightbarProfileImgContainer">
                   <img
                     className="rightbarProfileImg"
-                    src={
-                      friendsImg[index]
-                        ? friendsImg[index]
-                        : `${PF}/person/noAvatar.png`
-                    }
+                    src={friendImages[index]}
                     alt=""
                   />
                   <span className="rightbarOnline"></span>
@@ -137,11 +141,7 @@ const RightBar = ({ user }) => {
               <div className="rightbarFollowing" key={u._id}>
                 <Link to={`/profile/${u?.username}`}>
                   <img
-                    src={
-                      friendsImg[index]
-                        ? friendsImg[index]
-                        : `${PF}/person/noAvatar.png`
-                    }
+                    src={friendImages[index]}
                     alt=""
                     className="rightbarFollowingImg"
                   />
