@@ -54,22 +54,22 @@ export default function Header() {
         </div> */}
         <div className="topbarIcons">
           {isMobile && (
-            <div className="topbarIconItem">
+            <button className="topbarIconItem">
               <MenuIcon onClick={() => handleLeftBar()} />
-            </div>
+            </button>
           )}
-          <div className="topbarIconItem">
+          <button className="topbarIconItem">
             <PermIdentityIcon onClick={() => handleRightBar()} />
             <span className="topbarIconBadge">1</span>
-          </div>
-          <div className="topbarIconItem">
+          </button>
+          <button className="topbarIconItem">
             <ChatBubbleOutlineIcon color={"#516677"} />
             <span className="topbarIconBadge">2</span>
-          </div>
-          <div className="topbarIconItem">
+          </button>
+          <button className="topbarIconItem">
             <NotificationsNoneIcon />
             <span className="topbarIconBadge">1</span>
-          </div>
+          </button>
           <Link to={user?.username ? `/profile/${user?.username}` : "/"}>
             <img
               src={profileImg ? profileImg : `${PF}/person/noAvatar.png`}
