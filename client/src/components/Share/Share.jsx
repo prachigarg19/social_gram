@@ -80,7 +80,6 @@ const Share = () => {
                 style={{ display: "none" }}
                 type="file"
                 id="file"
-                accept=".png .jpg .jpeg"
                 onChange={(e) => setFile(e.target.files[0])}
               />
             </label>

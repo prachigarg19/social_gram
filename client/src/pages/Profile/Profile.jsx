@@ -155,7 +155,6 @@ const Profile = () => {
                         style={{ display: "none" }}
                         type="file"
                         id="coverFile"
-                        accept=".png .jpg .jpeg"
                         onChange={(e) => {
                           setCoverFile(e.target.files[0]);
                           setProfileFile(null);
