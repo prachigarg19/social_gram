@@ -55,9 +55,7 @@ const Feed = ({ username }) => {
     >
       <div className="feedWrapper">
         <Share />
-        {posts.map((p) => (
-          <Post key={p._id} post={p} />
-        ))}
+        {posts.length > 0 && posts.map((p) => <Post key={p._id} post={p} />)}
         {posts.length > 0 && (
           <div className="loadMorebuttonContainer">
             <button
