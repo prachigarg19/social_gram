@@ -129,18 +129,19 @@ router.get("/timeline/:id", async (req, res) => {
         return fetchProjectData(followerId);
       })
     );
-    allPosts.push(...userPost);
+
     userPost.map((post) => {
       allPosts.push(post);
     });
+
+    friendsPost.map((friend) => {
+      friend.map((post) => allPosts.push(post));
+    });
+
     //sort posts
     allPosts.sort(
       (post1, post2) => new Date(post2.createdAt) - new Date(post1.createdAt)
     );
-    // allPosts.push(...friendsPost);
-    friendsPost.map((friend) => {
-      friend.map((post) => allPosts.push(post));
-    });
     // cache.put(req.params.id, allPosts, 60000);
     const startIndex = perPage * (page - 1); // Starting index for slicing posts
     const endIndex = perPage * page; // Ending index for slicing posts
@@ -151,8 +152,6 @@ router.get("/timeline/:id", async (req, res) => {
   }
   // The page variable is obtained from the query parameter req.query.page. It represents the current page number and defaults to 1 if not provided.
   // The perPage variable is set to 5, which determines the number of posts to be returned per page.
-  // The skip() method is used to skip the appropriate number of posts based on the current page number and perPage value.
-  // The limit() method is used to limit the number of posts fetched per page to perPage.
   // The posts are sorted in descending order based on their createdAt field using the sort() method.
 });
 
