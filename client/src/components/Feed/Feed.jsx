@@ -31,7 +31,8 @@ const Feed = ({ username }) => {
       .then((response) => response.json())
       .then((data) => {
         setIsLoading(false);
-        setPosts((prevPosts) => [...prevPosts, ...data]);
+        if (Array.isArray(data))
+          setPosts((prevPosts) => [...prevPosts, ...data]);
       })
       .catch((error) => {
         setIsLoading(false);
