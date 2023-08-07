@@ -10,9 +10,12 @@ import MailIcon from "@mui/icons-material/Mail";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import PermIdentityIcon from "@mui/icons-material/PermIdentity";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+import LogoutIcon from "@mui/icons-material/Logout";
+import { useNavigate } from "react-router-dom";
 
 export default function Header() {
   const { user, profileImg } = useContext(AuthContext);
+  const navigate = useNavigate();
   const {
     isMobile,
     openLeftMenu,
@@ -29,6 +32,11 @@ export default function Header() {
   const handleRightBar = () => {
     setOpenRightMenu(!openRightMenu);
     setOpenLeftMenu(false);
+  };
+
+  const logoutUser = () => {
+    localStorage.removeItem("token");
+    navigate(0);
   };
 
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
@@ -69,6 +77,13 @@ export default function Header() {
           <button className="topbarIconItem">
             <NotificationsNoneIcon />
             <span className="topbarIconBadge">1</span>
+          </button>
+          <button
+            className="topbarIconItem"
+            title="Logout"
+            onClick={() => logoutUser()}
+          >
+            <LogoutIcon />
           </button>
           <Link to={user?.username ? `/profile/${user?.username}` : "/"}>
             <img
