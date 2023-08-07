@@ -11,21 +11,31 @@ router.post("/register", async (req, res) => {
   try {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(req.body.password, salt);
-    //extracting from req
-    const user = await new User({
-      username: req.body.username,
-      email: req.body.email,
-      password: hashedPassword,
-    });
-    //is user can be saved i.e. valid
-    const savedUser = await user.save(); //saves in database // Generate JWT token
-    const token = jwt.sign({ userId: user._id }, "shhhhh");
+    const userExist = await User.findOne({ email: req.body.email });
 
-    // Send token and user information in the response
-    res.status(200).json({ token, savedUser });
+    //extracting from req
+    if (!userExist) {
+      const user = await new User({
+        username: req.body.username,
+        email: req.body.email,
+        password: hashedPassword,
+      });
+      //is user can be saved i.e. valid
+      const savedUser = await user.save(); //saves in database // Generate JWT token
+      const token = jwt.sign({ userId: user._id }, "shhhhh");
+
+      // Send token and user information in the response
+      res.status(200).json({ token, savedUser });
+    } else {
+      res.status(409).json({
+        message: "user exist",
+      });
+    }
   } catch (e) {
     console.log(e);
-    res.status(500).send(e);
+    res.status(500).json({
+      message: "internal server error",
+    });
   }
 });
 
@@ -35,7 +45,7 @@ router.post("/login", async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email });
     if (!user) {
-      res.status(404).send("Incorrect email");
+      res.status(401).json({ message: "Incorrect credentials" });
       return;
     }
     const validPassword = await bcrypt.compare(
@@ -43,7 +53,7 @@ router.post("/login", async (req, res) => {
       user.password
     );
     if (!validPassword) {
-      res.status(404).send("Invalid Password");
+      res.status(401).json({ message: "Invalid credentials" });
       return;
     }
     const token = jwt.sign({ userId: user._id }, "shhhhh");
@@ -52,7 +62,7 @@ router.post("/login", async (req, res) => {
     res.status(200).json({ token, user });
   } catch (e) {
     console.log(e);
-    res.status(500).send(e);
+    res.status(500).json({message:"internal server error"});
   }
 });
 
