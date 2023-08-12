@@ -64,7 +64,7 @@ router.put("/upload/:type/:id", upload.single("img"), async (req, res) => {
       } else if (req.params.type === "coverPic") {
         updateField = "coverPic";
       } else {
-        return res.status(400).send("Invalid upload type.");
+        return res.status(422).send("Invalid upload type.");
       }
       try {
         const user = await User.findByIdAndUpdate(req.params.id, {

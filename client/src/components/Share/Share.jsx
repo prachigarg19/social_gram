@@ -8,15 +8,24 @@ import { AuthContext } from "../../contexts/AuthContext";
 import CustomSnackbar from "../Snackbar/CustomSnackbar";
 import { useNavigate } from "react-router-dom";
 import { CircularProgress } from "@mui/material";
+import { ErrorHandlingContext } from "../../contexts/ErrorHandlingContext";
 
 const Share = () => {
   const { user, token, profileImg } = useContext(AuthContext);
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
   const descRef = useRef();
   const [file, setFile] = useState(null);
-  const [showSnackbar, setShowSnackbar] = useState(false);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const {
+    error,
+    setError,
+    customBarText,
+    setCustomBarText,
+    showSnackbar,
+    setShowSnackbar,
+    closeSnackBar,
+  } = useContext(ErrorHandlingContext);
 
   const clearFields = () => {
     setFile(null);
@@ -42,10 +51,14 @@ const Share = () => {
       });
       setShowSnackbar(true);
       setIsLoading(false);
+      setCustomBarText("Post uploaded successfully!");
       navigate(0);
     } catch (err) {
       console.log(err);
       setIsLoading(false);
+      setError(true);
+      setCustomBarText("Error uploading post.Try again!");
+      setShowSnackbar(true);
     }
   };
 
@@ -114,12 +127,12 @@ const Share = () => {
           </div>
         </form>
       </div>
-      {showSnackbar && (
-        <CustomSnackbar
-          snackbarText={"Post has been shared successfully!"}
-          isVisible={showSnackbar}
-        />
-      )}
+      <CustomSnackbar
+        snackbarText={customBarText}
+        isVisible={showSnackbar}
+        status={error ? "error" : "success"}
+        onCloseFunction={closeSnackBar}
+      />
     </div>
   );
 };
