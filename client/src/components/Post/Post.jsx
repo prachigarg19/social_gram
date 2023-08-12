@@ -103,7 +103,11 @@ export const Post = ({ post }) => {
             />
             <span className="postLikeCounter">
               {isLiked
-                ? `You and ${like - 1} people liked this post`
+                ? `${
+                    like - 1 === 0
+                      ? "You liked this post"
+                      : `You and ${like - 1} people liked this post`
+                  }`
                 : `${like} people liked this post`}{" "}
             </span>
           </div>
