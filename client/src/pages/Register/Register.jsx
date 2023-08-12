@@ -1,9 +1,10 @@
-import React, { useContext, useRef } from "react";
+import React, { useContext, useRef, useState } from "react";
 import "../Login/login.css";
 import { AuthContext } from "../../contexts/AuthContext";
 import { LoginCall } from "../../apiCalls";
 import { CircularProgress } from "@mui/material";
 import { Link } from "react-router-dom";
+import CustomSnackbar from "../../components/Snackbar/CustomSnackbar";
 
 const Register = () => {
   const emailRef = useRef();
@@ -11,13 +12,27 @@ const Register = () => {
   const usernameRef = useRef();
   const repeatPasswordRef = useRef();
   const { dispatch, isFetching } = useContext(AuthContext);
+  const [showSnackbar, setShowSnackbar] = useState(false);
+  const [error, setError] = useState();
+  const [customBarText, setCustomBarText] = useState("");
+
+  const closeSnackBar = () => {
+    setError(false);
+    setCustomBarText("");
+    setShowSnackbar(false);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    let status = 200;
     const username = usernameRef.current.value;
     const password = passwordRef.current.value;
     const email = emailRef.current.value;
     if (passwordRef.current.value !== repeatPasswordRef.current.value) {
+      setError(true);
+      setCustomBarText("Password do not match!");
+      setShowSnackbar(true);
       return;
     }
     if (!username || !email || !password) return;
@@ -34,12 +49,24 @@ const Register = () => {
       },
       body: JSON.stringify(data),
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          status = response.status;
+          throw new Error("HTTP status " + response.status);
+        }
+        return response.json();
+      })
       .then((data) => {
         addContextValue(emailRef.current.value, passwordRef.current.value);
+        setCustomBarText("Account Created Successfully");
+        setShowSnackbar(true);
       })
       .catch((error) => {
-        console.error("Error:", error);
+        setError(true);
+        setShowSnackbar(true);
+        if (status === 409) setCustomBarText("User Already Exists!");
+        else if (status === 500) setCustomBarText("Server Error!");
+        else setCustomBarText("Check your Internet Connection");
       });
   };
 
@@ -100,6 +127,12 @@ const Register = () => {
           </div>
         </div>
       </div>
+      <CustomSnackbar
+        snackbarText={customBarText}
+        isVisible={showSnackbar}
+        status={error ? "error" : "success"}
+        onCloseFunction={closeSnackBar}
+      />
     </div>
   );
 };

@@ -2,22 +2,26 @@ import React, { useState } from "react";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 
-const CustomSnackbar = ({ snackbarText, isVisible }) => {
-  const [showSnackbar, setShowSnackbar] = useState(isVisible);
+const CustomSnackbar = ({
+  snackbarText,
+  isVisible,
+  status,
+  onCloseFunction,
+}) => {
   return (
     <>
       <Snackbar
-        open={showSnackbar}
+        open={isVisible}
         autoHideDuration={3000}
-        onClose={() => setShowSnackbar(false)}
+        onClose={onCloseFunction}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
         <div>
           <Alert
             elevation={6}
             variant="filled"
-            onClose={() => setShowSnackbar(false)}
-            severity="success"
+            onClose={onCloseFunction}
+            severity={status}
           >
             {snackbarText}
           </Alert>
