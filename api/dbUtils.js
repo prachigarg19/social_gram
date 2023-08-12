@@ -2,7 +2,6 @@ const Post = require("./models/Post");
 const User = require("./models/Users");
 //aggregates user and post
 async function fetchProjectData(id) {
-  console.log(id.toString());
   try {
     const posts = await Post.aggregate([
       //finds Post with userId= id passed as parameter
