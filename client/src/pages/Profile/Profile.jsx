@@ -13,6 +13,8 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import { CircularProgress } from "@mui/material";
 import fetchImage from "../../imageUtils";
+import { ErrorHandlingContext } from "../../contexts/ErrorHandlingContext";
+import CustomSnackbar from "../../components/Snackbar/CustomSnackbar";
 
 const style = {
   position: "absolute",
@@ -45,6 +47,15 @@ const Profile = () => {
   const [profileImg, setProfileImg] = useState("");
   const [coverImg, setCoverImg] = useState("");
   const navigate = useNavigate();
+  const {
+    error,
+    setError,
+    customBarText,
+    setCustomBarText,
+    showSnackbar,
+    setShowSnackbar,
+    closeSnackBar,
+  } = useContext(ErrorHandlingContext);
 
   //display user information
   useEffect(() => {
@@ -70,7 +81,7 @@ const Profile = () => {
   }, [username, currentUser]);
 
   const updateProfile = async (type, file) => {
-    console.log(type, file);
+    let status = 200;
     if (!file) {
       alert("No file selected");
       return;
@@ -90,11 +101,18 @@ const Profile = () => {
           body: formData,
         }
       );
-      navigate(0);
       setIsUploading(false);
+      setCustomBarText("Photo updated successfully!");
+      setShowSnackbar(true);
+      navigate(0);
     } catch (err) {
       console.log(err);
       setIsUploading(false);
+      setError(true);
+      if (status === 400) setCustomBarText("No photo uploaded!");
+      else if (status === 422) setCustomBarText("Invalid upload Type");
+      else setCustomBarText("Error uploading file. Try Again!");
+      setShowSnackbar(true);
     }
     setProfileFile(null);
     setCoverFile(null);
@@ -188,7 +206,6 @@ const Profile = () => {
                       style={{ display: "none" }}
                       type="file"
                       id="profileFile"
-                      accept=".png .jpg .jpeg"
                       onChange={(e) => {
                         setProfileFile(e.target.files[0]);
                         setCoverFile(null);
@@ -241,6 +258,12 @@ const Profile = () => {
               <RightBar user={user} />
             </div>
           </div>
+          <CustomSnackbar
+            snackbarText={customBarText}
+            isVisible={showSnackbar}
+            status={error ? "error" : "success"}
+            onCloseFunction={closeSnackBar}
+          />
         </div>
       </>
     )
