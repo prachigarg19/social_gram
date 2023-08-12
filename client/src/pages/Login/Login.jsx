@@ -4,12 +4,23 @@ import { AuthContext } from "../../contexts/AuthContext";
 import { LoginCall } from "../../apiCalls";
 import { CircularProgress } from "@mui/material";
 import { Link } from "react-router-dom";
+import { ErrorHandlingContext } from "../../contexts/ErrorHandlingContext";
+import CustomSnackbar from "../../components/Snackbar/CustomSnackbar";
 
 const Login = () => {
   //use ref to access dom element input
   const emailRef = useRef();
   const passwordRef = useRef();
-  const { dispatch, isFetching } = useContext(AuthContext);
+  const { dispatch, isFetching, user } = useContext(AuthContext);
+  const {
+    error,
+    setError,
+    customBarText,
+    setCustomBarText,
+    showSnackbar,
+    setShowSnackbar,
+    closeSnackBar,
+  } = useContext(ErrorHandlingContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,6 +34,11 @@ const Login = () => {
       }
     } catch (e) {
       console.log(e);
+    }
+    if (!user) {
+      setError(true);
+      setCustomBarText("Invalid Credentials!");
+      setShowSnackbar(true);
     }
   };
   return (
@@ -70,6 +86,12 @@ const Login = () => {
             </Link>
           </div>
         </form>
+        <CustomSnackbar
+          snackbarText={customBarText}
+          isVisible={showSnackbar}
+          status={error ? "error" : "success"}
+          onCloseFunction={closeSnackBar}
+        />
       </div>
     </div>
   );
