@@ -5,6 +5,7 @@ import { LoginCall } from "../../apiCalls";
 import { CircularProgress } from "@mui/material";
 import { Link } from "react-router-dom";
 import CustomSnackbar from "../../components/Snackbar/CustomSnackbar";
+import { ErrorHandlingContext } from "../../contexts/ErrorHandlingContext";
 
 const Register = () => {
   const emailRef = useRef();
@@ -12,15 +13,15 @@ const Register = () => {
   const usernameRef = useRef();
   const repeatPasswordRef = useRef();
   const { dispatch, isFetching } = useContext(AuthContext);
-  const [showSnackbar, setShowSnackbar] = useState(false);
-  const [error, setError] = useState();
-  const [customBarText, setCustomBarText] = useState("");
-
-  const closeSnackBar = () => {
-    setError(false);
-    setCustomBarText("");
-    setShowSnackbar(false);
-  };
+  const {
+    error,
+    setError,
+    customBarText,
+    setCustomBarText,
+    showSnackbar,
+    setShowSnackbar,
+    closeSnackBar,
+  } = useContext(ErrorHandlingContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
